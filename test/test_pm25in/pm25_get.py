@@ -5,7 +5,12 @@ import json
 import urllib
 import urllib2
 
-url = "http://www.pm25.in/api/querys/pm10.json"
+# just for pm10
+# url = "http://www.pm25.in/api/querys/pm10.json"
+# just for pm2.5
+# url = "http://www.pm25.in/api/querys/pm2_5.json"
+# all datas
+url = "http://www.pm25.in/api/querys/aqi_details.json"
 city = "guangzhou"
 token = "5j1znBVAsnSf5xQyNQyq"
 
@@ -19,9 +24,12 @@ urllib2respose = urllib2.urlopen(req)
 # print urllib2respose.headers.type
 try:
     jdata = json.load(urllib2respose)
-    print "jdata", jdata
+    # print "jdata", jdata
+    for data in jdata:
+        print data["aqi"]
 except:
     print "not jdata"
+
 
 # requests lib:
 # import requests
