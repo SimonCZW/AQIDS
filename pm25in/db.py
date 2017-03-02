@@ -26,8 +26,17 @@ def create_engine(user, password, database, host='127.0.0.1', port=3306, **kw):
     params.update(kw)
     engine = _Engine(MySQLdb.connect(**params))
 
-# def connection():
-    # return _ConnectionCtx()
+def connection():
+    """
+    For multiply operation in one connection.
+    Usage:
+        create_engine(...)
+        with connection():
+            select2(...)
+            select1(...)
+            ...
+    """
+    return _ConnectionCtx()
 
 def with_connection(func):
     """
@@ -88,8 +97,8 @@ def _select(sql, single=False, *args):
         else:
             return [Dict(names, values) for values in cursor.fetchall()]
 
-    except Exception, e:
-        raise Exception(e)
+    # except Exception, e:
+        # raise Exception(e)
 
     finally:
         if cursor:
@@ -100,6 +109,48 @@ def select(sql, *args):
 
 def select_one(sql, *args):
     return _select(sql, True, *args)
+
+def has_table(table_name):
+    """
+    Judge whether had ceated table.
+    If table had been created, function return 1 else 0.
+    Usage:
+        has_table(table_name)
+    """
+    sql = 'select count(*) from information_schema.TABLES where table_name="?";'
+    _result = select_one(sql, table_name)
+    # except result format: {'count(*)': number}
+    if len(_result) != 1:
+        raise Exception('Expect only one column.')
+    return _result.values()[0]
+
+def insert(table_name, data):
+    """
+    Insert datas into table.
+    data is dict.
+    """
+    pass
+
+def create_table(table_name, primary_keys, table_items):
+    """
+    Create table. Primary_keys is a List and table_items is a Dict.
+    """
+    sql = "create table %s(" % (table_name,)
+    for key, value in table_items.iteritems():
+        DDL = key + " " + value + " " + "not null, "
+        sql = sql + DDL
+    sql = sql + "primary key("
+    for primary_key in primary_keys:
+        sql = sql + primary_key + ', '
+    sql = sql.rstrip(', ')
+    sql = sql + "));"
+    try:
+        _update(sql)
+    # table already exists
+    except MySQLdb.OperationalError, e:
+        print e
+    except Exception, e:
+        print e
 
 class Dict(dict):
     """
@@ -207,6 +258,15 @@ class _ConnectionCtx(object):
 
 if __name__ == '__main__':
     create_engine(user='root', password='123456', database='test')
+
+    # Testing for has_data() and create_table()
+    # with connection():
+        # testdata={'it1': 'varchar(255)', 'it2': 'int', 'it3': 'float'}
+        # if not has_table('Tablec'):
+            # create_table('Tablec', ['it1', 'it2'], testdata)
+            # print "ok"
+        # else:
+            # print "Table already exists"
 
     # sql = """create table Course(
 # cid varchar(255) primary key,
