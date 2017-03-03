@@ -26,7 +26,12 @@ try:
     jdata = json.load(urllib2respose)
     # print "jdata", jdata
     for data in jdata:
-        print data["aqi"]
+        # print data["aqi"]
+        try:
+            with open('simple_data.txt', 'w+') as dfile:
+                dfile.write(data)
+        except:
+            print "cannot write."
 except:
     print "not jdata"
 
