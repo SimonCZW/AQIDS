@@ -126,16 +126,27 @@ def has_table(table_name):
 
 def insert(table_name, data):
     """
-    Insert datas into table.
+    Insert datas into table, and success to insert data return 1(row).
     data is dict.
     """
-    pass
+    _keys = ''
+    _values = ''
+    if has_table(table_name):
+        for key, value in data.iteritems():
+            _keys = _keys + str(key) + ','
+            _values = _values + '"' + str(value) + '"' + ','
+        _keys = _keys[:-1]
+        _values = _values[:-1]
+        _sql = "insert into %s(%s) values(%s)" % (table_name, _keys, _values)
+        return _update(_sql)
+    else:
+        raise Exception('Donnot exists table: %s .' % table_name)
 
 def create_table(table_name, primary_keys, table_items):
     """
     Create table. Primary_keys is a List and table_items is a Dict.
     """
-    sql = "create table %s(" % (table_name,)
+    sql = "create table %s(" % table_name
     for key, value in table_items.iteritems():
         DDL = key + " " + value + " " + "not null, "
         sql = sql + DDL
@@ -150,7 +161,7 @@ def create_table(table_name, primary_keys, table_items):
     except MySQLdb.OperationalError, e:
         print e
     except Exception, e:
-        print e
+        print "Error create_table: ", e
 
 class Dict(dict):
     """
@@ -259,15 +270,22 @@ class _ConnectionCtx(object):
 if __name__ == '__main__':
     create_engine(user='root', password='123456', database='test')
 
-    # Testing for has_data() and create_table()
+    # Testing for has_table(), create_table(), get_items()
+    # import apidetail
     # with connection():
-        # testdata={'it1': 'varchar(255)', 'it2': 'int', 'it3': 'float'}
-        # if not has_table('Tablec'):
-            # create_table('Tablec', ['it1', 'it2'], testdata)
-            # print "ok"
+        # testdata={'it1': 'itttttt1', 'it2': 1.5, 'it3': 123}
+        # table_name = 'TestTable'
+        # primary_keys = ['it1', 'it2']
+        # if not has_table(table_name):
+            # table_items = apidetail.get_items(testdata)
+            # create_table(table_name, primary_keys, table_items)
+            # print "create table"
         # else:
             # print "Table already exists"
+        # if has_table(table_name):
+            # print insert(table_name, testdata)
 
+    # Testing for _update function
     # sql = """create table Course(
 # cid varchar(255) primary key,
 # cname varchar(255) not null,
@@ -275,10 +293,8 @@ if __name__ == '__main__':
 # credit float not null,
 # precid varchar(255)
 # );"""
-     # _update(sql)
+    # _update(sql)
 
+    # Testing for _select function
     # sql = "select * from Course;"
     # print _select(sql, single=True)
-
-
-
