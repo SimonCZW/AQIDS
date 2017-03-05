@@ -109,7 +109,6 @@ def select(sql, *args):
 
 def select_one(sql, *args):
     return _select(sql, True, *args)
-
 def has_table(table_name):
     """
     Judge whether had ceated table.
@@ -133,8 +132,17 @@ def insert(table_name, data):
     _values = ''
     if has_table(table_name):
         for key, value in data.iteritems():
-            _keys = _keys + str(key) + ','
-            _values = _values + '"' + str(value) + '"' + ','
+            #for unicode(chinese data)
+            if isinstance(key, unicode):
+                # key = key.encode('utf-8')
+                _keys = _keys + key + ','
+            else:
+                _keys = _keys + str(key) + ','
+            #for unicode(chinese data)
+            if isinstance(value, unicode):
+                _values = _values + '"' + value + '"' + ','
+            else:
+                _values = _values + '"' + str(value) + '"' + ','
         _keys = _keys[:-1]
         _values = _values[:-1]
         _sql = "insert into %s(%s) values(%s)" % (table_name, _keys, _values)
@@ -154,7 +162,7 @@ def create_table(table_name, primary_keys, table_items):
     for primary_key in primary_keys:
         sql = sql + primary_key + ', '
     sql = sql.rstrip(', ')
-    sql = sql + "));"
+    sql = sql + "))character set utf8 collate utf8_unicode_ci;"
     try:
         _update(sql)
     # table already exists
