@@ -165,20 +165,23 @@ def main():
     db.create_engine(user='root', password='123456', database='test')
 
     city = "guangzhou"
-    api_url = "http://www.pm25.in/api/querys/aqi_details.json"
     token = "5j1znBVAsnSf5xQyNQyq"
-    # all_datas = get_api_details_by_city(api_url, city, token)
 
-    stations_code_list = get_station_list_by_city(
-        'http://www.pm25.in/api/querys/station_names.json', 'guangzhou', token)
+    aqis_data_by_city = "http://www.pm25.in/api/querys/aqi_details.json"
+    # all_datas = get_api_details_by_city(all_aqi_data_by_city, city, token)
 
+    stations_list_by_city = "http://www.pm25.in/api/querys/station_names.json"
+    aqis_data_by_station = "http://www.pm25.in/api/querys/aqis_by_station.json"
+
+    stations_code_list = get_station_list_by_city(stations_list_by_city,
+                                                  city, token)
     all_datas = []
     for station in stations_code_list:
-        station_data = get_api_details_by_station(
-            'http://www.pm25.in/api/querys/aqis_by_station.json',
-            station, token)
+        station_data = get_api_details_by_station(aqis_data_by_station,
+                                                  station, token)
         all_datas = all_datas + station_data
 
+    # Print sorry message. Cannot get data.
     if isinstance(all_datas, dict):
         for v in all_datas.itervalues():
             print v
