@@ -14,11 +14,12 @@ def get_items(data):
     """
     _table_items = {}
     for key, value in data.iteritems():
+        if isinstance(key, unicode):
+            key = key.encode('utf-8')
         if isinstance(value, int):
             _table_items[key] = "int"
         elif isinstance(value, float):
             _table_items[key] = "float"
-        # elif isinstance(value, str):
         else:
             # include time_point
             _table_items[key] = "varchar(255)"
@@ -54,62 +55,144 @@ def insert_db(table_name, primary_keys, data):
         print 'Inserted data into %s failed.(data: %s)' % (table_name, data)
         print e
 
+def encode_data(data):
+    """ input dict, encode k & v  utf8 """
+    for k, v in data.iteritems():
+        data.pop(k)
+        k = k.encode('utf-8')
+        if isinstance(v, unicode):
+            data[k] = v.encode('utf-8')
+        else:
+            data[k] = v
+    return data
 
-def main():
-    # all datas aqi
-    api_url = "http://www.pm25.in/api/querys/aqi_details.json"
-    city = "guangzhou"
-    token = "5j1znBVAsnSf5xQyNQyq"
-    now_time = datetime.datetime.now().strftime("%Y%m%d%H")
+def handle_data(city, now_time, data):
+    """
+    Input params:
+        city for create table.
+        now_time for newest data.
+        data is a dict, key for create table and value store in table.
+    There two type of data.(each station data and average data)
+    """
+    # example: 2017-03-01T16:00:00Z -> 2017030216(year-mon-day-hour)
+    timestamp = datetime.datetime.strptime(
+        data['time_point'], "%Y-%m-%fT%H:%M:%SZ").strftime("%Y%m%d%H")
+    data['time_point'] = timestamp
 
+    # is newest data?
+    if now_time > timestamp:
+    # if now_time < timestamp: #Testing data
+        print "Not the newest data: ", data
+        # all_datas.remove(data)
+    # newest data, insert to db
+    else:
+
+        # last data: average city data
+        if data['station_code'] is None and data['position_name'] is None:
+            data.pop('station_code')
+            data.pop('position_name')
+
+            table_name = city.capitalize() + "Average"
+            primary_keys = ['time_point']
+            insert_db(table_name, primary_keys, data)
+        # station data
+        else:
+            primary_keys = ['station_code']
+            table_name = city.capitalize() + timestamp
+            insert_db(table_name, primary_keys, data)
+
+def get_api_details(api_url, city, token):
+    """
+    input api, city, and token. return json data from api_url.
+    """
     values = {'city': city, 'token': token}
     datas = urllib.urlencode(values)
     url = api_url + '?' + datas
-
-    # connect to database
-    db.create_engine(user='root', password='123456', database='test')
-
+    print url
     try:
+        # for API data:
         api_details = urllib2.urlopen(url)
         all_datas = json.load(api_details)
-
-        # print all_datas
-        for data in datas:
-            # example: 2017-03-01T16:00:00Z -> 2017030216(year-mon-day-hour)
-            timestamp = datetime.datetime.strptime(
-                data['time_point'],"%Y-%m-%fT%H:%M:%SZ").strftime("%Y%m%d%H")
-            data['time_point'] = timestamp
-
-            # is newest data?
-            if now_time > timestamp:
-                print "Not the newest data: ", data
-                datas.remove(data)
-            # newest data, insert to db
-            else:
-                # last data: average city data
-                if data['station_code'] is None and data['position_name'] is None:
-                    data.pop('station_code')
-                    data.pop('position_name')
-
-                    table_name = city.capitalize() + "Average"
-                    primary_keys = ['time_point']
-                    with db.connection():
-                        insert_db(table_name, primary_keys, data)
-                # station data
-                else:
-                    primary_keys = ['station_code']
-                    table_name = city.capitalize() + timestamp
-                    with db.connection():
-                        insert_db(table_name, primary_keys, data)
-
+        # 增加返回类型? #############################all_datas是什么类型.
+        return all_datas
     except:
         print "not data from %s", url
 
 
+def main():
+    # connect to database
+    db.create_engine(user='root', password='123456', database='test')
+
+    city = "guangzhou"
+    api_url = "http://www.pm25.in/api/querys/aqi_details.json"
+    token = "5j1znBVAsnSf5xQyNQyq"
+    all_datas = get_api_details(api_url, city, token)
+
+    if isinstance(all_datas, dict):
+        for v in all_datas.itervalues():
+            print v
+        return
+
+    print "all_datas type: ", type(all_datas)
+    print all_datas
+    print
+
+    # Testing data
+    # all_datas = [{u'pm2_5': 41,
+                  # u'primary_pollutant': u'\u9897\u7c92\u7269(PM10)',
+                  # u'co': 0.8,
+                  # u'pm10': 72,
+                  # u'area': u'\u5e7f\u5dde',
+                  # u'o3_8h': 45,
+                  # u'o3': 66,
+                  # u'o3_24h': 72,
+                  # u'station_code': u'1345A',
+                  # u'quality': u'\u826f',
+                  # u'co_24h': 1.1,
+                  # u'no2_24h': 82,
+                  # u'so2': 13,
+                  # u'so2_24h': 17,
+                  # u'time_point': u'2017-03-01T16:00:00Z',
+                  # u'pm2_5_24h': 67,
+                  # u'position_name': u'\u5e7f\u96c5\u4e2d\u5b66',
+                  # u'o3_8h_24h': 45,
+                  # u'aqi': 61,
+                  # u'pm10_24h': 106,
+                  # u'no2': 66},
+                 # {u'pm2_5': 34,
+                  # u'primary_pollutant': u'\u9897\u7c92\u7269(PM10)',
+                  # u'co': 0.755,
+                  # u'pm10': 53,
+                  # u'area': u'\u5e7f\u5dde',
+                  # u'o3_8h': 60,
+                  # u'o3': 99,
+                  # u'o3_24h': 104,
+                  # u'station_code': None,
+                  # u'quality': u'\u826f',
+                  # u'co_24h': 0.927,
+                  # u'no2_24h': 66,
+                  # u'so2': 12,
+                  # u'so2_24h': 18,
+                  # u'time_point': u'2017-03-01T16:00:00Z',
+                  # u'pm2_5_24h': 59,
+                  # u'position_name': None,
+                  # u'o3_8h_24h': 60,
+                  # u'aqi': 53,
+                  # u'pm10_24h': 86,
+                  # u'no2': 35}
+                # ]
+
+    now_time = datetime.datetime.now().strftime("%Y%m%d%H")
+    print now_time
+    print
+    with db.connection():
+        for data in all_datas:
+            handle_data(city, now_time, data)
+
 if __name__ == '__main__':
     main()
 
-    # Testing for insert_db function...
+    # Testing for insert_db() function...
     # db.create_engine(user='root', password='123456', database='test')
     # testdata={'it1': 'itttttt1', 'it2': 1.5, 'it3': 123}
     # table_name = 'TestTable'
