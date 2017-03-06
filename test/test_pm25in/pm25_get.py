@@ -24,14 +24,14 @@ urllib2respose = urllib2.urlopen(req)
 # print urllib2respose.headers.type
 try:
     jdata = json.load(urllib2respose)
-    # print "jdata", jdata
-    for data in jdata:
+    print "jdata", jdata
+    # for data in jdata:
         # print data["aqi"]
-        try:
-            with open('simple_data.txt', 'w+') as dfile:
-                dfile.write(data)
-        except:
-            print "cannot write."
+        # try:
+            # with open('simple_data.txt', 'w+') as dfile:
+                # dfile.write(data)
+        # except:
+            # print "cannot write."
 except:
     print "not jdata"
 
