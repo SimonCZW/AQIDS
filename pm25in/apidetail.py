@@ -76,7 +76,7 @@ def handle_data(city, now_time, data):
     """
     # example: 2017-03-01T16:00:00Z -> 2017030216(year-mon-day-hour)
     timestamp = datetime.datetime.strptime(
-        data['time_point'], "%Y-%m-%fT%H:%M:%SZ").strftime("%Y%m%d%H")
+        data['time_point'], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y%m%d%H")
     data['time_point'] = timestamp
 
     # is newest data?
@@ -113,10 +113,10 @@ def get_api_details_by_city(api_url, city, token):
         # for API data:
         api_details = urllib2.urlopen(url)
         all_datas = json.load(api_details)
-        # 增加返回类型? #############################all_datas是什么类型.
         return all_datas
-    except:
+    except Exception, e:
         print "not data from %s", url
+        print e
 
 def get_api_details_by_station(api_url, station_code, token):
     """
@@ -168,18 +168,18 @@ def main():
     token = "5j1znBVAsnSf5xQyNQyq"
 
     aqis_data_by_city = "http://www.pm25.in/api/querys/aqi_details.json"
-    # all_datas = get_api_details_by_city(all_aqi_data_by_city, city, token)
+    all_datas = get_api_details_by_city(aqis_data_by_city, city, token)
 
-    stations_list_by_city = "http://www.pm25.in/api/querys/station_names.json"
-    aqis_data_by_station = "http://www.pm25.in/api/querys/aqis_by_station.json"
-
-    stations_code_list = get_station_list_by_city(stations_list_by_city,
-                                                  city, token)
-    all_datas = []
-    for station in stations_code_list:
-        station_data = get_api_details_by_station(aqis_data_by_station,
-                                                  station, token)
-        all_datas = all_datas + station_data
+    # Get data by each station
+    # stations_list_by_city = "http://www.pm25.in/api/querys/station_names.json"
+    # aqis_data_by_station = "http://www.pm25.in/api/querys/aqis_by_station.json"
+    # stations_code_list = get_station_list_by_city(stations_list_by_city,
+                                                  # city, token)
+    # all_datas = []
+    # for station in stations_code_list:
+        # station_data = get_api_details_by_station(aqis_data_by_station,
+                                                  # station, token)
+        # all_datas = all_datas + station_data
 
     # Print sorry message. Cannot get data.
     if isinstance(all_datas, dict):
@@ -188,6 +188,7 @@ def main():
         return
 
     now_time = datetime.datetime.now().strftime("%Y%m%d%H")
+    print now_time
     with db.connection():
         for data in all_datas:
             handle_data(city, now_time, data)
