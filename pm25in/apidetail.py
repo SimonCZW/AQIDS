@@ -101,38 +101,58 @@ def handle_data(city, now_time, data):
             table_name = city.capitalize() + timestamp
             insert_db(table_name, primary_keys, data)
 
-def get_api_details_by_city(api_url, city, token):
+
+def _get_api_base(api_url, token, other_params):
+    """
+    Base api request function, Return json type data from API.
+    Params is a dict for url params.
+
+    For example:
+        api_url: http://api.com
+        token: xxxxxxx
+        params: {'city': 'guangzhou', 'station': 'no'}
+        And the request url:
+            http://api.com?token=xxxxxxx&city=guangzhou&station=no
+
+    Has no "try, except" syntaxa, so the best USAGE is:
+        try:
+            _get_api_base()
+        except:
+            ...
+    """
+    params = {'token': token}
+    params.update(other_params)
+    url_params = urllib.urlencode(params)
+    url = api_url + '?' + url_params
+    req = urllib2.urlopen(url)
+    json_datas = json.load(req)
+    return json_datas
+
+def get_api_details_by_city(city, token):
     """
     input api, city, and token. return json data from api_url.
     """
-    values = {'city': city, 'token': token}
-    params = urllib.urlencode(values)
-    url = api_url + '?' + params
-    print url
+    api = "http://www.pm25.in/api/querys/aqi_details.json"
     try:
-        # for API data:
-        api_details = urllib2.urlopen(url)
-        all_datas = json.load(api_details)
+        all_datas = _get_api_base(api, token, {'city': city})
         return all_datas
     except Exception, e:
-        print "not data from %s", url
+        print "not data from %s", api
         print e
 
-def get_api_details_by_station(api_url, station_code, token):
+def get_api_details_by_station(station_code, token):
     """
     input api, station, and token. return json data from api_url.
     """
-    values = {'station_code': station_code, 'token': token}
-    params = urllib.urlencode(values)
-    url = api_url + '?' + params
+    api = "http://www.pm25.in/api/querys/aqis_by_station.json"
     try:
-        station_api_details = urllib2.urlopen(url)
-        station_datas = json.load(station_api_details)
+        station_datas = _get_api_base(api, token,
+                                      {'station_code': station_code})
         return station_datas
-    except:
-        print "not data from %s", url
+    except Exception, e:
+        print "not data from %s", api
 
-def get_station_list_by_city(api_url, city, token):
+def get_station_list_by_city(city, token):
     """
     Return a city's stations code list.
     original return data format:
@@ -147,18 +167,16 @@ def get_station_list_by_city(api_url, city, token):
             ]
         }
     """
-    values = {'city': city, 'token': token}
-    params = urllib.urlencode(values)
-    url = api_url + '?' + params
     station_code_list = []
+    api = "http://www.pm25.in/api/querys/station_names.json"
     try:
-        stations_response = urllib2.urlopen(url)
-        stations_list = json.load(stations_response)
+        stations_list = _get_api_base(api, token, {'city': city})
         for station in stations_list.get('stations'):
             station_code_list.append(station['station_code'].encode('utf-8'))
         return station_code_list
-    except:
-        print "not data from %s", url
+    except Exception, e:
+        print "not data from %s", api
+
 
 def main():
     # connect to database
@@ -167,18 +185,14 @@ def main():
     city = "guangzhou"
     token = "5j1znBVAsnSf5xQyNQyq"
 
-    aqis_data_by_city = "http://www.pm25.in/api/querys/aqi_details.json"
-    all_datas = get_api_details_by_city(aqis_data_by_city, city, token)
+    # 1. Get all city data in one time
+    all_datas = get_api_details_by_city(city, token)
 
-    # Get data by each station
-    # stations_list_by_city = "http://www.pm25.in/api/querys/station_names.json"
-    # aqis_data_by_station = "http://www.pm25.in/api/querys/aqis_by_station.json"
-    # stations_code_list = get_station_list_by_city(stations_list_by_city,
-                                                  # city, token)
+    # 2. Get data by each station
+    # stations_code_list = get_station_list_by_city(city, token)
     # all_datas = []
     # for station in stations_code_list:
-        # station_data = get_api_details_by_station(aqis_data_by_station,
-                                                  # station, token)
+        # station_data = get_api_details_by_station(station, token)
         # all_datas = all_datas + station_data
 
     # Print sorry message. Cannot get data.
@@ -187,64 +201,16 @@ def main():
             print v
         return
 
+    # print all_datas
+
     now_time = datetime.datetime.now().strftime("%Y%m%d%H")
     print now_time
     with db.connection():
         for data in all_datas:
+            # pass Bad station 1347A
+            if data['station_code'] == '1347A':
+                continue
             handle_data(city, now_time, data)
 
 if __name__ == '__main__':
     main()
-
-    # Testing for insert_db() function...
-    # db.create_engine(user='root', password='123456', database='test')
-    # testdata={'it1': 'itttttt1', 'it2': 1.5, 'it3': 123}
-    # table_name = 'TestTable'
-    # primary_keys = ['it1', 'it2']
-    # with db.connection():
-        # insert_db(table_name, primary_keys, testdata)
-
-    # Testing data
-    # all_datas = [{u'pm2_5': 41,
-                  # u'primary_pollutant': u'\u9897\u7c92\u7269(PM10)',
-                  # u'co': 0.8,
-                  # u'pm10': 72,
-                  # u'area': u'\u5e7f\u5dde',
-                  # u'o3_8h': 45,
-                  # u'o3': 66,
-                  # u'o3_24h': 72,
-                  # u'station_code': u'1345A',
-                  # u'quality': u'\u826f',
-                  # u'co_24h': 1.1,
-                  # u'no2_24h': 82,
-                  # u'so2': 13,
-                  # u'so2_24h': 17,
-                  # u'time_point': u'2017-03-01T16:00:00Z',
-                  # u'pm2_5_24h': 67,
-                  # u'position_name': u'\u5e7f\u96c5\u4e2d\u5b66',
-                  # u'o3_8h_24h': 45,
-                  # u'aqi': 61,
-                  # u'pm10_24h': 106,
-                  # u'no2': 66},
-                 # {u'pm2_5': 34,
-                  # u'primary_pollutant': u'\u9897\u7c92\u7269(PM10)',
-                  # u'co': 0.755,
-                  # u'pm10': 53,
-                  # u'area': u'\u5e7f\u5dde',
-                  # u'o3_8h': 60,
-                  # u'o3': 99,
-                  # u'o3_24h': 104,
-                  # u'station_code': None,
-                  # u'quality': u'\u826f',
-                  # u'co_24h': 0.927,
-                  # u'no2_24h': 66,
-                  # u'so2': 12,
-                  # u'so2_24h': 18,
-                  # u'time_point': u'2017-03-01T16:00:00Z',
-                  # u'pm2_5_24h': 59,
-                  # u'position_name': None,
-                  # u'o3_8h_24h': 60,
-                  # u'aqi': 53,
-                  # u'pm10_24h': 86,
-                  # u'no2': 35}
-                # ]
