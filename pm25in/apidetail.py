@@ -5,6 +5,7 @@ import json
 import urllib
 import urllib2
 import datetime
+from collections import OrderedDict
 
 import db
 
@@ -12,7 +13,7 @@ def get_items(data):
     """
     return table items from data for create table.
     """
-    _table_items = {}
+    _table_items = OrderedDict()
     for key, value in data.iteritems():
         if isinstance(key, unicode):
             key = key.encode('utf-8')
@@ -66,6 +67,15 @@ def encode_data(data):
             data[k] = v
     return data
 
+def order_data(data, orderlist):
+    """
+    Input a dict, and return Orderdict().Order by orderlist.
+    """
+    order_data = OrderedDict()
+    for item in orderlist:
+        order_data[item] = data.get(item)
+    return order_data
+
 def handle_data(city, now_time, data):
     """
     Input params:
@@ -90,11 +100,23 @@ def handle_data(city, now_time, data):
             data.pop('station_code')
             data.pop('position_name')
 
+            orderlist = ['time_point', 'area', 'aqi', 'quality',
+                         'primary_pollutant', 'pm2_5', 'pm2_5_24h', 'pm10',
+                         'pm10_24h', 'no2', 'no2_24h', 'so2', 'so2_24h', 'co',
+                         'co_24h', 'o3', 'o3_8h', 'o3_24h', 'o3_8h_24h']
+            data = order_data(data, orderlist)
+
             table_name = city.capitalize() + "Average"
             primary_keys = ['time_point']
             insert_db(table_name, primary_keys, data)
         # station data
         else:
+            orderlist = ['station_code', 'area', 'position_name', 'time_point',
+                         'aqi', 'quality', 'primary_pollutant', 'pm2_5',
+                         'pm2_5_24h', 'pm10', 'pm10_24h', 'no2', 'no2_24h',
+                         'so2', 'so2_24h', 'co', 'co_24h', 'o3', 'o3_8h',
+                         'o3_24h', 'o3_8h_24h']
+            data = order_data(data, orderlist)
             primary_keys = ['station_code']
             table_name = city.capitalize() + timestamp
             insert_db(table_name, primary_keys, data)
