@@ -1,12 +1,14 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import sys
 import json
 import urllib
 import urllib2
 import datetime
 from collections import OrderedDict
 
+sys.path.append('/root/AQIDS/wrapper')
 import db
 
 def get_items(data):
@@ -208,14 +210,14 @@ def main():
     token = "5j1znBVAsnSf5xQyNQyq"
 
     # 1. Get all city data in one time
-    all_datas = get_api_details_by_city(city, token)
+    # all_datas = get_api_details_by_city(city, token)
 
     # 2. Get data by each station
-    # stations_code_list = get_station_list_by_city(city, token)
-    # all_datas = []
-    # for station in stations_code_list:
-        # station_data = get_api_details_by_station(station, token)
-        # all_datas = all_datas + station_data
+    stations_code_list = get_station_list_by_city(city, token)
+    all_datas = []
+    for station in stations_code_list:
+        station_data = get_api_details_by_station(station, token)
+        all_datas = all_datas + station_data
 
     # Print sorry message. Cannot get data.
     if isinstance(all_datas, dict):
