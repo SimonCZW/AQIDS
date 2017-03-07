@@ -122,7 +122,7 @@ def handle_data(city, now_time, data):
             insert_db(table_name, primary_keys, data)
 
 
-def _get_api_base(api_url, token, other_params):
+def _get_api_base(api_url, token, other_params=None):
     """
     Base api request function, Return json type data from API.
     Params is a dict for url params.
@@ -141,7 +141,8 @@ def _get_api_base(api_url, token, other_params):
             ...
     """
     params = {'token': token}
-    params.update(other_params)
+    if other_params is not None:
+        params.update(other_params)
     url_params = urllib.urlencode(params)
     url = api_url + '?' + url_params
     req = urllib2.urlopen(url)
@@ -196,6 +197,7 @@ def get_station_list_by_city(city, token):
         return station_code_list
     except Exception, e:
         print "not data from %s", api
+
 
 
 def main():
