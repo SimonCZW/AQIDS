@@ -79,11 +79,9 @@ def handle_data(city, now_time, data):
         data['time_point'], "%Y-%m-%dT%H:%M:%SZ").strftime("%Y%m%d%H")
     data['time_point'] = timestamp
 
-    # is newest data?
-    if now_time > timestamp:
-    # if now_time < timestamp: #Testing data
+    # is newest data, allow 1 hour error
+    if int(now_time) > int(timestamp) + 1:
         print "Not the newest data: ", data
-        # all_datas.remove(data)
     # newest data, insert to db
     else:
 
@@ -204,7 +202,7 @@ def main():
     # print all_datas
 
     now_time = datetime.datetime.now().strftime("%Y%m%d%H")
-    print now_time
+    # print now_time
     with db.connection():
         for data in all_datas:
             # pass Bad station 1347A
