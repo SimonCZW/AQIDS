@@ -14,6 +14,9 @@ import db
 
 class GetJsonAqiBase(object):
     def __init__(self, token, **database):
+        """
+        Set token and init database.
+        """
         self.token = token
         db.create_engine(**database)
 
@@ -28,21 +31,19 @@ class GetJsonAqiBase(object):
             params: {'city': 'guangzhou', 'station': 'no'}
             And the request url:
                 http://api.com?token=xxxxxxx&city=guangzhou&station=no
-
-        Has no "try, except" syntaxa, so the best USAGE is:
-            try:
-                _get_api_base()
-            except:
-                ...
         """
         params = {'token': self.token}
         if other_params is not None:
             params.update(other_params)
         url_params = urllib.urlencode(params)
         url = api_url + '?' + url_params
-        req = urllib2.urlopen(url)
-        json_datas = json.load(req)
-        return json_datas
+        try:
+            req = urllib2.urlopen(url)
+            json_datas = json.load(req)
+            return json_datas
+        except Exception, e:
+            print "Request %s error." % url,
+            print e
 
     def order_data(self, data, orderlist):
         """
@@ -99,17 +100,53 @@ class GetJsonAqiBase(object):
                 _table_items[key] = "varchar(255)"
         return _table_items
 
-    def handle_data(self, data):
-        pass
-
 
 class Aqicn(GetJsonAqiBase):
     def __init__(self, token, **database):
+        """
+        Init Aqicn:
+            set self.token
+            create connection with MySQLdb
+            set api_base
+            update create table name
+        """
         super(Aqicn, self).__init__(token, **database)
-        self.json_order_datas = []
         self.api_base = 'http://api.waqi.info/feed'
+        self.update_table_name()
 
     def get_aqi_data_by_stations(self, station_url, other_params=None):
+        """
+        Request data from API.
+        Success 200 return json data format:
+            {
+                "status": "ok",
+                "data": {
+                    "aqi": xx,
+                    "idx": xx,
+                    "attribution": [
+                        {
+                            "url": xx,
+                            "name": xx,
+                        }
+                        ...
+                    ],
+                    "city": {
+                        "geo": [ xx, xx],
+                        "name": xx,
+                        "url": xx,
+                    },
+                    "dominentpol": xx,
+                    "iaqi":{
+                        "pm25": {"v": xx}
+                        "pm10": {"v": xx}
+                        ...
+                    },
+                    "time": {
+                        "s": "YYYY-mm-dd HH:MM:SS"
+                        "tz": xx,
+                        "v": xx
+                    }
+        """
         _api = self.api_base + station_url
         try:
             return self._get_api_base(_api, other_params)
@@ -119,14 +156,22 @@ class Aqicn(GetJsonAqiBase):
             return None
 
     def handle_data(self, data):
+        """
+        Handle each station data.
+            Filter useful data from original json data,
+            Store data into DB and if table has not been created, create it.
+        """
         _aqi_data = OrderedDict()
         if data['status'] != 'ok':
             return
 
-        _aqi_data['idx'] = data['data']['idx']
+        _aqi_data['station_id'] = data['data']['idx']
+
+        # example: city/guangdong/guangzhou/tiyuxi -> guangdong_guangzhou_tiyuxi
         _aqi_data['station_name'] = re.match(
             '.*city/(.*)/$' , data['data']['city']['url']).group(1).replace(
                 '/', '_')
+
         _aqi_data['time_point'] = datetime.datetime.strptime(
             data['data']['time']['s'], "%Y-%m-%d %H:%M:%S").strftime(
                 "%Y%m%d%H%M%S")
@@ -141,6 +186,7 @@ class Aqicn(GetJsonAqiBase):
         else:
             _aqi_data['aqi'] = data['data']['aqi']
 
+        # get iaqi detail data:
         _all_iaqi_items = ['pm25', 'pm10', 'o3', 'no2', 'so2', 'co',
                            't', 'w', 'r', 'h', 'd', 'p', 'wd']
         _item_mappings = {'pm25': 'pm25', 'pm10': 'pm10', 'o3': 'o3',
@@ -153,18 +199,25 @@ class Aqicn(GetJsonAqiBase):
                 _aqi_data[_item_mappings[_item]] = data['data'][
                     'iaqi'][_item]['v']
             else:
-                #rain precipitation
-                if _item == 'r':
+                if _item == 'r': #rain precipitation
                     _aqi_data[_item_mappings[_item]] = ''
                 else:
                     _aqi_data[_item_mappings[_item]] = 0.0
 
+        _primary_keys = ['station_id', 'time_point']
+        self.insert_db(self.table_name, _primary_keys, _aqi_data)
 
-        _table_name = 'Aqicn'
-        _primary_keys = ['idx', 'time_point']
-        self.insert_db(_table_name, _primary_keys, _aqi_data)
+    def update_table_name(self):
+        """
+        Every day create a table.
+        """
+        _today = datetime.datetime.now().strftime("%Y%m%d")
+        self.table_name = 'Aqicn' + _today
 
     def run(self, stations_url_list):
+        """
+        Input a list of station's API, request it and handle its return data.
+        """
         with db.connection():
             for station_url in stations_url_list:
                 _station_data = self.get_aqi_data_by_stations(station_url)
