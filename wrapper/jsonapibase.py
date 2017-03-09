@@ -9,7 +9,7 @@ from collections import OrderedDict
 import db
 
 
-class GetJsonAqiBase(object):
+class GetJsonApiBase(object):
     def __init__(self, token, **database):
         """
         Set token and init database.
