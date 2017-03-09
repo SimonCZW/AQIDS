@@ -8,9 +8,9 @@ from collections import OrderedDict
 
 sys.path.append('/root/AQIDS/wrapper')
 from db import connection
-from jsonapibase import GetJsonAqiBase
+from jsonapibase import GetJsonApiBase
 
-class Aqicn(GetJsonAqiBase):
+class Aqicn(GetJsonApiBase):
     def __init__(self, token, **database):
         """
         Init Aqicn:
