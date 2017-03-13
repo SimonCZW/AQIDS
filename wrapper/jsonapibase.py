@@ -22,7 +22,7 @@ class GetJsonApiBase(object):
         db.create_engine(**database)
 
     def get_api_base(self, api_url, other_params=None,
-                      headers=None, data=None):
+                      headers=None, data=None, json_format=True):
         """
         Base api request function, Return json type data from API.
         Params is a dict for url params.
@@ -35,6 +35,7 @@ class GetJsonApiBase(object):
                 http://api.com?token=xxxxxxx&city=guangzhou&station=no
             headers: http request header
             data: post request data
+            json_format: default return data format is json
         """
         params = {'token': self.token}
         if other_params is not None:
@@ -47,8 +48,10 @@ class GetJsonApiBase(object):
         try:
             # req = urllib2.urlopen(url)
             response = urllib2.urlopen(req)
-            json_datas = json.load(response)
-            return json_datas
+            if json_format is True:
+                return json.load(response)
+            else:
+                return response.read()
         except Exception, e:
             print "Request %s error." % url,
             print e
