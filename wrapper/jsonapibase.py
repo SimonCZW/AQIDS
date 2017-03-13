@@ -10,9 +10,13 @@ import db
 
 
 class GetJsonApiBase(object):
-    def __init__(self, token, **database):
+    def __init__(self, token=None, **database):
         """
         Set token and init database.
+        Usage:
+            >>> database = dict(user='root', password='123456', database='test')
+            >>> token = 'xxxx'
+            >>> GetJsonApiBase(token, **database)
         """
         self.token = token
         db.create_engine(**database)
