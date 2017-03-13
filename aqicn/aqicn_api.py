@@ -58,7 +58,7 @@ class Aqicn(GetJsonApiBase):
         """
         _api = self.api_base + station_url
         try:
-            return self._get_api_base(_api, other_params)
+            return self.get_api_base(_api, other_params)
         except Exception, e:
             print "Cannot get data from: ", _api
             print e
