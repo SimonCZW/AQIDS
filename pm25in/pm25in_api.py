@@ -64,7 +64,7 @@ class Pm25in(GetJsonApiBase):
         """
         _api = "http://www.pm25.in/api/querys/aqi_details.json"
         try:
-            _all_datas = self._get_api_base(_api, {'city': self.city})
+            _all_datas = self.get_api_base(_api, {'city': self.city})
             # Print sorry message. Cannot get data.
             if isinstance(_all_datas, dict):
                 for error in _all_datas.itervalues():
@@ -81,7 +81,7 @@ class Pm25in(GetJsonApiBase):
         """
         _api = "http://www.pm25.in/api/querys/aqis_by_station.json"
         try:
-            _station_datas = self._get_api_base(_api,
+            _station_datas = self.get_api_base(_api,
                                                 {'station_code': station_code})
             return _station_datas
         except Exception, e:
@@ -105,7 +105,7 @@ class Pm25in(GetJsonApiBase):
         _station_code_list = []
         _api = "http://www.pm25.in/api/querys/station_names.json"
         try:
-            _stations_list = self._get_api_base(_api, {'city': self.city})
+            _stations_list = self.get_api_base(_api, {'city': self.city})
             for _station in _stations_list.get('stations'):
                 _station_code_list.append(
                     _station['station_code'].encode('utf-8'))
