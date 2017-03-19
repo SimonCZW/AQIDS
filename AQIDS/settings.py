@@ -27,8 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = ['192.168.0.101']
 
-
 # Application definition
+DJANGO_SETTINGS_MODULE = 'AQIDS.settings'
 
 INSTALLED_APPS = [
     'django.contrib.admin',
@@ -37,7 +37,13 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'django_crontab',
     'mainapp',
+    'catchdata',
+]
+
+CRONJOBS = [
+    ('*/1 * * * *', 'catchdata.cron.main', '>> /root/crontest'),
 ]
 
 MIDDLEWARE = [
