@@ -2,13 +2,17 @@
 # -*- coding: utf-8 -*-
 
 import re
+import os
 import sys
 import datetime
 from collections import OrderedDict
 
-sys.path.append('/root/AQIDS/wrapper')
-from db import connection
-from jsonapibase import GetJsonApiBase
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.append(BASE_DIR)
+# sys.path.append('/root/AQIDS/wrapper')
+from wrapper.db import connection
+from wrapper.jsonapibase import GetJsonApiBase
 
 class Aqicn(GetJsonApiBase):
     def __init__(self, token, **database):

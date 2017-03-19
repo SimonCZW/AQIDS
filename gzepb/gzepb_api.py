@@ -1,12 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import os
 import sys
 # from collections import OrderedDict
 
-sys.path.append('/root/AQIDS/wrapper')
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+if BASE_DIR not in sys.path:
+    sys.path.append(BASE_DIR)
+# sys.path.append('/root/AQIDS/wrapper')
 # from db import connection
-from jsonapibase import GetJsonApiBase
+from wrapper.jsonapibase import GetJsonApiBase
 
 class Gzepb(GetJsonApiBase):
     """
