@@ -18,10 +18,12 @@ class AqiStandardBase(models.Model):
 class ChinaStandard(AqiStandardBase):
     class Meta:
         db_table = 'chinastandard'
+        app_label = 'mainapp'
 
 class USAStandard(AqiStandardBase):
     class Meta:
         db_table = 'usastandard'
+        app_label = 'mainapp'
 
 class Station(models.Model):
     STATION_TYPES = (
@@ -58,6 +60,7 @@ class Station(models.Model):
     class Meta:
         db_table = 'stations'
         unique_together = (('station_name', 'station_type'),)
+        app_label = 'mainapp'
 
 class GzepbAqiData(models.Model):
     id = models.AutoField(primary_key=True)
@@ -103,6 +106,7 @@ class GzepbAqiData(models.Model):
     class Meta:
         db_table = 'gzepbaqidata'
         unique_together = (('station_name', 'time_point'),)
+        app_label = 'mainapp'
 
 class AqicnIAqiData(models.Model):
     id = models.AutoField(primary_key=True)
@@ -137,3 +141,4 @@ class AqicnIAqiData(models.Model):
     class Meta:
         db_table = 'aqicniaqidata'
         unique_together = (('station_name', 'time_point'),)
+        app_label = 'mainapp'
