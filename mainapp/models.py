@@ -27,13 +27,20 @@ class USAStandard(AqiStandardBase):
 
 class Station(models.Model):
     STATION_TYPES = (
-        ('city_average', '城市均值'),
-        ('evaluate_point', '城市评价点'),
-        ('trendency_point', '城市趋势点'),
-        ('national_point', '国控点'),
-        ('roadside_point', '路边站'),
-        ('contrast_national_point', '国控对照点'),
-        ('us_consulate_point', '美国领事馆点'),
+        ('城市均值', '城市均值'),
+        ('城市评价点', '城市评价点'),
+        ('城市趋势点', '城市趋势点'),
+        ('国控点', '国控点'),
+        ('路边站', '路边站'),
+        ('国控对照点', '国控对照点'),
+        ('美国领事馆点', '美国领事馆点'),
+        # ('city_average', '城市均值'),
+        # ('evaluate_point', '城市评价点'),
+        # ('trendency_point', '城市趋势点'),
+        # ('national_point', '国控点'),
+        # ('roadside_point', '路边站'),
+        # ('contrast_national_point', '国控对照点'),
+        # ('us_consulate_point', '美国领事馆点'),
     )
     station_name = models.CharField('监测点名称', primary_key=True,
                                     max_length=50)
@@ -65,9 +72,8 @@ class Station(models.Model):
 class GzepbAqiData(models.Model):
     id = models.AutoField(primary_key=True)
     station_name = models.ForeignKey('Station', on_delete=models.CASCADE,
-                                     verbose_name='监测点')#db_column='')
+                                     verbose_name='监测点')
     time_point = models.DateTimeField('发布时间')
-    # date = models.DateField('日期', default=datetime.date.today())
     date = models.DateField('日期', default=datetime.date.today)
 
     aqi = models.FloatField('AQI值', blank=True, null=True)
@@ -92,13 +98,13 @@ class GzepbAqiData(models.Model):
     pm25_1h = models.FloatField('pm25 1h浓度', blank=True, null=True)
     pm25_24h = models.FloatField('pn24 24h滑动平均浓度', blank=True, null=True)
 
-    so2_aqi = models.FloatField('so2 iaqi值(1h)', blank=True, null=True)
-    no2_aqi = models.FloatField('no2 iaqi值(1h)', blank=True, null=True)
-    pm10_aqi = models.FloatField('pm10 iaqi值(1h)', blank=True, null=True)
-    co_aqi = models.FloatField('co iaqi值(1h)', blank=True, null=True)
-    o3_aqi = models.FloatField('o3 iaqi值(1h)', blank=True, null=True)
-    o3_aqi_8h = models.FloatField('o3 iaqi值(8h)', blank=True, null=True)
-    pm25_aqi = models.FloatField('pm25 iaqi值(1h)', blank=True, null=True)
+    so2_iaqi = models.FloatField('so2 iaqi值(1h)', blank=True, null=True)
+    no2_iaqi = models.FloatField('no2 iaqi值(1h)', blank=True, null=True)
+    pm10_iaqi = models.FloatField('pm10 iaqi值(1h)', blank=True, null=True)
+    co_iaqi = models.FloatField('co iaqi值(1h)', blank=True, null=True)
+    o3_iaqi = models.FloatField('o3 iaqi值(1h)', blank=True, null=True)
+    o3_iaqi_8h = models.FloatField('o3 iaqi值(8h)', blank=True, null=True)
+    pm25_iaqi = models.FloatField('pm25 iaqi值(1h)', blank=True, null=True)
 
     def __unicode__(self):
         return "%s - %s" % (str(self.time_point), self.station_name)
@@ -113,7 +119,6 @@ class AqicnIAqiData(models.Model):
     station_name = models.ForeignKey('Station', models.CASCADE,
                                      verbose_name='监测点')
     time_point = models.DateTimeField('发布时间')
-    # date = models.DateField('日期', default=datetime.date.today())
     date = models.DateField('日期', default=datetime.date.today)
 
     aqi = models.FloatField('AQI值', blank=True, null=True, default=None)
