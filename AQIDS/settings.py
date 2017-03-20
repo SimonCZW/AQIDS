@@ -43,8 +43,10 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('*/1 * * * *', 'catchdata.cron.main', '>> /root/crontest'),
+    #('*/1 * * * *', 'catchdata.cron.main', '>> /root/crontest'),
+    ('*/3 * * * *', 'catchdata.cron.get_and_store_aqicn', '>> /root/crontest'),
 ]
+CRONTAB_LOCK_JOBS = True
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
