@@ -206,6 +206,7 @@ class Gzepb(object):
             _aqi_data['pm25_iaqi'] = _origin_data['PM2_5_1HA']
             _aqi_data['quality'] = _origin_data['QUALITY'].strip()
             _aqi_data['station_name'] = _origin_data['DWNAME'].strip()
+            _aqi_data['message'] = _origin_data['Msg'].strip()
 
             _aqi_datas.append(_aqi_data)
         return _aqi_datas
