@@ -149,9 +149,9 @@ class Aqicn(GetJsonApiBase):
 
         _station_data['station_name'] = self._district_mapping[_station_code][0]
         if _station_data['station_name'] == '广州均值':
-            _station_data['station_type'] = 'city_average'
+            _station_data['station_type'] = '城市均值'
         else:
-            _station_data['station_type'] = 'us_consulate_point'
+            _station_data['station_type'] = '美国领事馆点'
 
         # wei / jing
         _station_data['latitude'] = data['data']['city']['geo'][0]
