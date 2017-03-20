@@ -36,10 +36,10 @@ class Station(models.Model):
         ('us_consulate_point', '美国领事馆点'),
     )
     station_name = models.CharField('监测点名称', primary_key=True,
-                                    max_length=20)
+                                    max_length=50)
     station_type = models.CharField('监测点类型', max_length=25,
                                     choices=STATION_TYPES)
-    display_name = models.CharField('监测点显示名称', max_length=30, blank=True)
+    display_name = models.CharField('监测点显示名称', max_length=50, blank=True)
     latitude = models.FloatField('纬度', blank=True, null=True, default=None)
     longitude = models.FloatField('经度', blank=True, null=True, default=None)
     city = models.CharField('城市', max_length=10)
