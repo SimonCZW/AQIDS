@@ -1,18 +1,12 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-import os
-import sys
-# from collections import OrderedDict
+import json
+import urllib
+import urllib2
+import datetime
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if BASE_DIR not in sys.path:
-    sys.path.append(BASE_DIR)
-# sys.path.append('/root/AQIDS/wrapper')
-# from db import connection
-from wrapper.jsonapibase import GetJsonApiBase
-
-class Gzepb(GetJsonApiBase):
+class Gzepb(object):
     """
     For www.gzepb.gov.cn/api/ .
     Request data.
@@ -23,23 +17,80 @@ class Gzepb(GetJsonApiBase):
                 'Referer': 'http://210.72.1.216:8080/gzaqi_new/RealTimeDate.html',
                 'Origin': 'http://210.72.1.216:8080'}
 
-    def __init__(self, **database):
-        super(Gzepb, self).__init__(**database)
-        self.base_url = 'http://210.72.1.216:8080'
+    def __init__(self):
+        self.api = 'http://210.72.1.216:8080/gzaqi_new/MapData.cshtml'
 
-    def get_aqi_time(self):
+    @staticmethod
+    def get_aqi_data():
+        """
+        Return all aqi information list.
+        """
+        gzepb = Gzepb()
+        return gzepb._handle_aqi_data()
+
+    @staticmethod
+    def get_station_data():
+        """
+        Return all station information list.
+        """
+        gzepb = Gzepb()
+        return gzepb._handle_station_data()
+
+    @staticmethod
+    def get_aqi_time():
+        """
+        Return newest aqi time.
+        """
+        gzepb = Gzepb()
+        return gzepb._get_aqi_time()
+
+    def _gzepb_base_api(self, data=None, json_format=True, other_params=None):
+        """
+        Base api request function, return data from API.
+
+        Argument data is request data.
+        Argument json_format is a mark that use to judging
+            whether the response data is json format or not.(default: json)
+        Arguement other_params is a dict for url params.
+
+        For example:
+            params: {'city': 'guangzhou', 'station': 'no'}
+            And the request url:
+                http://api.com?city=guangzhou&station=no
+            data: post request data
+        """
+        params = {}
+        if other_params is not None:
+            params.update(other_params)
+        url_params = urllib.urlencode(params)
+        if url_params != '':
+            url = self.api + '?' + url_params
+        else:
+            url = self.api
+
+        req = urllib2.Request(url, self._headers)
+        req.add_data(data)
+        try:
+            response = urllib2.urlopen(req)
+            if json_format is True:
+                return json.load(response)
+            else:
+                return response.read()
+        except Exception, e:
+            print "Request %s error." % url,
+            print e
+
+    def _get_aqi_time(self):
         """
         POST request for newest aqi data real time.
         Return format(list):
             ["YYYY","mm","dd","HH"]
         """
-        _api = self.base_url + '/gzaqi_new/MapData.cshtml'
-        _data = 'OpType=GetAQITime'
-        aqi_time = self.get_api_base(api_url=_api,
-                                     headers=self._headers, data=_data)
-        # print aqi_time
+        _req_data = 'OpType=GetAQITime'
+        _aqi_time = self._gzepb_base_api(data=_req_data)
+        return _aqi_time
 
-    def get_all_data(self):
+    def _get_aqi_data(self):
         """
         POST request for alll station's real time data in GZ.
         Data is string. And transfer the data format to:
@@ -86,20 +137,16 @@ class Gzepb(GetJsonApiBase):
             ...
         ]
         """
-        _api = self.base_url + '/gzaqi_new/MapData.cshtml'
         _req_data = 'OpType=GetAllRealTimeData'
-        _all_datas = self.get_api_base(api_url=_api, headers=self._headers,
-                                       data=_req_data, json_format=False)
+        _all_datas = self._gzepb_base_api(data=_req_data, json_format=False)
 
         import re
         import json
         _all_datas = re.sub(r'new Date\((\d+)\)', r'\1', _all_datas)
-        _jsondata = json.loads(_all_datas)
-        # print type(_jsondata)
-        # print _jsondata[0]
-        # print _jsondata[0]['AQI']
+        _aqi_json_data = json.loads(_all_datas)
+        return _aqi_json_data
 
-    def get_all_stations(self):
+    def _get_all_stations(self):
         """
         POST request for alll stations information in GZ.
         And the station's data format is:
@@ -119,16 +166,76 @@ class Gzepb(GetJsonApiBase):
             ...
         ]
         """
-        _api = self.base_url + '/gzaqi_new/MapData.cshtml'
-        _data = 'OpType=GetAllStations'
-        all_stations = self.get_api_base(api_url=_api,
-                                         headers=self._headers, data=_data)
+        _req_data = 'OpType=GetAllStations'
+        _all_stations = self._gzepb_base_api(data=_req_data)
+        return _all_stations
 
-    def handle_data(self):
-        pass
+    def _handle_aqi_data(self):
+        """
+        handle the original response data for all realtime aqi data.
+        """
+        _aqi_datas = []
+        _origin_aqi_datas = self._get_aqi_data()
+        for _origin_data in _origin_aqi_datas:
+            _aqi_data = {}
+            _aqi_data['time_point'] = datetime.datetime.fromtimestamp(
+                int(str(_origin_data['AQITIME'])[:10])).strftime("%Y-%m-%d %H:%M:%S")
+            _aqi_data['data'] = _origin_data['YY'] + _origin_data['MM'] + _origin_data['DD']
+            _aqi_data['aqi'] = _origin_data['AQI']
+            _aqi_data['dominentpol'] = _origin_data['PRIMARY'].strip()
+            _aqi_data['so2_1h'] = _origin_data['SO2_1H']
+            _aqi_data['so2_24h'] = _origin_data['SO2_24H']
+            _aqi_data['no2_1h'] = _origin_data['NO2_1H']
+            _aqi_data['no2_24h'] = _origin_data['NO2_24H']
+            _aqi_data['pm10_1h'] = _origin_data['PM10_1H']
+            _aqi_data['pm10_24h'] = _origin_data['PM10_24H']
+            _aqi_data['co_1h'] = _origin_data['CO_1H']
+            _aqi_data['co_24h'] = _origin_data['CO_24H']
+            _aqi_data['o3_1h'] = _origin_data['O3_1H']
+            _aqi_data['o3_1h_24h'] = _origin_data['O3_1H_24H']
+            _aqi_data['o3_8h'] = _origin_data['O3_8H']
+            _aqi_data['o3_8h_24h'] = _origin_data['O3_8H_24H']
+            _aqi_data['pm25_1h'] = _origin_data['PM2_5_1H']
+            _aqi_data['pm25_24h'] = _origin_data['PM2_5_24H']
+            _aqi_data['so2_iaqi'] = _origin_data['SO2_1H_AQI']
+            _aqi_data['no2_iaqi'] = _origin_data['NO2_1H_AQI']
+            _aqi_data['pm10_iaqi'] = _origin_data['PM10_1H_A']
+            _aqi_data['co_iaqi'] = _origin_data['CO_1H_AQI']
+            _aqi_data['o3_iaqi'] = _origin_data['O3_1H_AQI']
+            _aqi_data['o3_iaqi_8h'] = _origin_data['O3_8H_AQI']
+            _aqi_data['pm25_iaqi'] = _origin_data['PM2_5_1HA']
+            _aqi_data['quality'] = _origin_data['QUALITY'].strip()
+            _aqi_data['station_name'] = _origin_data['DWNAME'].strip()
+
+            _aqi_datas.append(_aqi_data)
+        return _aqi_datas
+
+    def _handle_station_data(self):
+        """
+        handle the original response data for all realtime station data.
+        """
+        _station_datas = []
+        _origin_station_datas = self._get_all_stations()
+        for _origin_data in _origin_station_datas:
+            _station_data = {}
+            _station_data['station_name'] = _origin_data['stationName'].strip()
+            _station_data['station_type'] = _origin_data['Type'].strip()
+            _station_data['display_name'] = _origin_data['DisplayName'].strip()
+            # wei / jing
+            _station_data['latitude'] = _origin_data['Y']
+            _station_data['longitude'] = _origin_data['X']
+            _station_data['city'] = '广州'
+            _station_data['district'] = _origin_data['stCode'].strip()
+            if _origin_data['center'].strip() == '是':
+                _station_data['center'] = True
+            else:
+                _station_data['center'] = False
+
+            _station_datas.append(_station_data)
+        return _station_datas
 
 if __name__ == '__main__':
-    database = dict(user='root', password='123456', database='test')
-    gz = Gzepb(**database)
-    gz.get_all_data()
-    # gz.get_aqi_time()
+    pass
+    # print Gzepb.get_aqi_data()
+    # print Gzepb.get_station_data()
+    # print Gzepb.get_aqi_time()
