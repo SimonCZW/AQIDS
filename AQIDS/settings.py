@@ -43,8 +43,8 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    #('*/1 * * * *', 'catchdata.cron.main', '>> /root/crontest'),
-    ('*/3 * * * *', 'catchdata.cron.get_and_store_aqicn', '>> /root/crontest'),
+    ('*/3 * * * *', 'catchdata.cron.get_and_store_gzepb_station', '>> /var/log/aqids.log'),
+    ('*/3 * * * *', 'catchdata.cron.get_and_store_aqicn_station', '>> /var/log/aqids.log'),
 ]
 CRONTAB_LOCK_JOBS = True
 
