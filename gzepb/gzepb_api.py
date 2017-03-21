@@ -177,7 +177,7 @@ class Gzepb(object):
             _aqi_data = {}
             _aqi_data['time_point'] = datetime.datetime.fromtimestamp(
                 int(str(_origin_data['AQITIME'])[:10])).strftime("%Y-%m-%d %H:%M:%S")
-            _aqi_data['data'] = _origin_data['YY'] + _origin_data['MM'] + _origin_data['DD']
+            _aqi_data['date'] = _origin_data['YY'] + _origin_data['MM'] + _origin_data['DD']
             _aqi_data['aqi'] = _origin_data['AQI']
             _aqi_data['dominentpol'] = _origin_data['PRIMARY'].strip()
             _aqi_data['so2_1h'] = _origin_data['SO2_1H']
@@ -224,7 +224,8 @@ class Gzepb(object):
             _station_data['longitude'] = _origin_data['X']
             _station_data['city'] = '广州'
             _station_data['district'] = _origin_data['stCode'].strip()
-            if _origin_data['center'].strip() == '是':
+
+            if _origin_data['center'].strip() == u'是':
                 _station_data['center'] = True
             else:
                 _station_data['center'] = False
