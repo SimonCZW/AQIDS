@@ -20,29 +20,26 @@ class Gzepb(object):
     def __init__(self):
         self.api = 'http://210.72.1.216:8080/gzaqi_new/MapData.cshtml'
 
-    @staticmethod
-    def get_aqi_data():
-        """
-        Return all aqi information list.
-        """
-        gzepb = Gzepb()
-        return gzepb._handle_aqi_data()
-
-    @staticmethod
-    def get_station_data():
+    @classmethod
+    def get_station_data(cls):
         """
         Return all station information list.
         """
-        gzepb = Gzepb()
-        return gzepb._handle_station_data()
+        return cls()._handle_station_data()
 
-    @staticmethod
-    def get_aqi_time():
+    @classmethod
+    def get_aqi_data(cls):
+        """
+        # Return all aqi information list.
+        """
+        return cls()._handle_aqi_data()
+
+    @classmethod
+    def get_aqi_time(cls):
         """
         Return newest aqi time.
         """
-        gzepb = Gzepb()
-        return gzepb._get_aqi_time()
+        return cls()._get_aqi_time()
 
     def _gzepb_base_api(self, data=None, json_format=True, other_params=None):
         """
