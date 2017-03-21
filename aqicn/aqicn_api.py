@@ -2,17 +2,13 @@
 # -*- coding: utf-8 -*-
 
 import re
-import os
-import sys
+import json
+import urllib
+import urllib2
 import datetime
-# from collections import OrderedDict
 
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-if BASE_DIR not in sys.path:
-    sys.path.append(BASE_DIR)
-from wrapper.jsonapibase import GetJsonApiBase
 
-class Aqicn(GetJsonApiBase):
+class Aqicn(object):
 
     _district_mapping = {'guangzhou': ['广州均值', None, None],
                          'guangdong/guangzhou/us-consulate': ['美国领事馆', '天河区', True],
@@ -31,20 +27,62 @@ class Aqicn(GetJsonApiBase):
                          'guangdong/guangzhou/fanyushiqiao': ['番禺市桥', '番禺区', False],
                          'guangdong/guangzhou/wanqingsha': ['万顷沙', '番禺区', False]}
 
-    def __init__(self, token):
+    def __init__(self):
         """
         Init Aqicn:
             set self.token
-            create connection with MySQLdb
             set api_base
             update create table name
         """
-        super(Aqicn, self).__init__(token)
+        self.token = 'de552bc7dcefe469e68466f97d31f0c88faef2c1'
         self.api_base = 'http://api.waqi.info/feed'
         self.station_datas = []
         self.aqi_datas = []
 
-    def get_aqi_data_by_stations(self, station_url, other_params=None):
+    def _get_api_base(self, api_url, other_params=None,
+                      headers=None, data=None, json_format=True):
+        """
+        Base api request function, Return json type data from API.
+        Params is a dict for url params.
+
+        For example:
+            api_url: http://api.com
+            token: xxxxxxx
+            params: {'city': 'guangzhou', 'station': 'no'}
+            And the request url:
+                http://api.com?token=xxxxxxx&city=guangzhou&station=no
+            headers: http request header
+            data: post request data
+            json_format: default return data format is json
+        """
+        if self.token is not None:
+            params = {'token': self.token}
+        else:
+            params = {}
+
+        if other_params is not None:
+            params.update(other_params)
+        url_params = urllib.urlencode(params)
+
+        if url_params != '':
+            url = api_url + '?' + url_params
+        else:
+            url = api_url
+
+        req = urllib2.Request(url, headers)
+        if data:
+            req.add_data(data)
+        try:
+            response = urllib2.urlopen(req)
+            if json_format is True:
+                return json.load(response)
+            else:
+                return response.read()
+        except Exception, e:
+            print "Request %s error." % url,
+            print e
+
+    def _get_aqi_data_by_stations(self, station_url):
         """
         Request data from API.
         Success 200 return json data format:
@@ -79,19 +117,17 @@ class Aqicn(GetJsonApiBase):
         """
         _api = self.api_base + station_url
         try:
-            return self.get_api_base(_api, other_params)
+            return self._get_api_base(api_url = _api)
         except Exception, e:
-            print "Cannot get data from: ", _api
-            print e
+            print "Cannot get data from: ", _api, e
             return None
 
     def _handle_aqi_data(self, data):
         """
         Handle each station data.
-            Filter useful data from original json data,
-            Store data into DB and if table has not been created, create it.
+        Filter useful data from original json data.
+        Return aqi's data.
         """
-        # _aqi_data = OrderedDict()
         if data['status'] != 'ok':
             return
 
@@ -133,14 +169,16 @@ class Aqicn(GetJsonApiBase):
                 _aqi_data[_item_mappings[_item]] = data['data'][
                     'iaqi'][_item]['v']
             else:
-                if _item == 'r': #rain precipitation
-                    _aqi_data[_item_mappings[_item]] = ''
-                else:
-                    _aqi_data[_item_mappings[_item]] = 0.0
+                _aqi_data[_item_mappings[_item]] = 0.0
 
         self.aqi_datas.append(_aqi_data)
 
     def _handle_station_data(self, data):
+        """
+        Handle each station data.
+        Filter useful data from original json data.
+        Return station's data.
+        """
         if data['status'] != 'ok':
             return
 
@@ -154,6 +192,7 @@ class Aqicn(GetJsonApiBase):
             _station_data['station_type'] = '美国领事馆点'
 
         # wei / jing
+        data['data']['city']['geo'].sort()
         _station_data['latitude'] = data['data']['city']['geo'][0]
         _station_data['longitude'] = data['data']['city']['geo'][1]
 
@@ -166,20 +205,37 @@ class Aqicn(GetJsonApiBase):
 
     def run(self, stations_url_list):
         """
-        Input a list of station's API, request it and handle its return data.
+        Normal usage.
+        You can get data by self.aqi_datas/self.station_datas .
         """
         for station_url in stations_url_list:
-            _station_data = self.get_aqi_data_by_stations(station_url)
-            self._handle_aqi_data(_station_data)
-            self._handle_station_data(_station_data)
+            _all_datas = self._get_aqi_data_by_stations(station_url)
+            self._handle_aqi_data(_all_datas)
+            self._handle_station_data(_all_datas)
 
+    @staticmethod
+    def get_aqi_data(stations_url_list):
+        """
+        staticmethod for returning aqi data.
+        """
+        gz_aqi = Aqicn()
+        for station_url in stations_url_list:
+            _all_datas = gz_aqi._get_aqi_data_by_stations(station_url)
+            gz_aqi._handle_aqi_data(_all_datas)
+        return gz_aqi.aqi_datas
 
+    @staticmethod
+    def get_station_data(stations_url_list):
+        """
+        staticmethod for returning station data.
+        """
+        gz_station = Aqicn()
+        for station_url in stations_url_list:
+            _all_datas = gz_station._get_aqi_data_by_stations(station_url)
+            gz_station._handle_station_data(_all_datas)
+        return gz_station.station_datas
 
 if __name__ == '__main__':
-    token = 'de552bc7dcefe469e68466f97d31f0c88faef2c1'
-    gz = Aqicn(token)
-
-
     stations_url_list = ['/guangzhou/',
                          '/guangdong/guangzhou/us-consulate/',
                          '/guangdong/guangzhou/tiyuxi/',
@@ -197,4 +253,12 @@ if __name__ == '__main__':
                          '/guangdong/guangzhou/fanyushiqiao/',
                          '/guangdong/guangzhou/wanqingsha/']
 
-    gz.run(stations_url_list)
+    # 1.staticmethod usage:
+    # print Aqicn.get_aqi_data(stations_url_list)
+    # print Aqicn.get_station_data(stations_url_list)
+
+    # 2.normal usage:
+    # gz = Aqicn()
+    # gz.run(stations_url_list)
+    # print gz.aqi_datas
+    # print gz.station_datas
