@@ -10,7 +10,7 @@ import datetime
 
 class Aqicn(object):
 
-    _district_mapping = {'guangzhou': ['广州均值', None, None],
+    _district_mapping = {'guangzhou': ['广州均值', '全广州', True],
                          'guangdong/guangzhou/us-consulate': ['美国领事馆', '天河区', True],
                          'guangdong/guangzhou/tiyuxi': ['体育西', '天河区', True],
                          'guangdong/guangzhou/modieshazhan': ['磨碟沙', '海珠区', True],
@@ -143,7 +143,7 @@ class Aqicn(object):
                 # "%Y%m%d%H%M%S")
         _aqi_data['date'] = datetime.datetime.strptime(
             data['data']['time']['s'], "%Y-%m-%d %H:%M:%S").strftime(
-                "%Y%m%d")
+                "%Y-%m-%d")
 
         if data['data'].has_key('dominentpol'):
             _aqi_data['dominentpol'] = data['data']['dominentpol']
