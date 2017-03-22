@@ -68,7 +68,8 @@ class Station(models.Model):
 class GzepbAqiData(models.Model):
     id = models.AutoField(primary_key=True)
     station_name = models.ForeignKey('Station', on_delete=models.CASCADE,
-                                     verbose_name='监测点')
+                                     verbose_name='监测点',
+                                     blank=True, null=True)
     time_point = models.DateTimeField('发布时间')
     date = models.DateField('日期', default=datetime.date.today)
 
@@ -113,7 +114,8 @@ class GzepbAqiData(models.Model):
 class AqicnIAqiData(models.Model):
     id = models.AutoField(primary_key=True)
     station_name = models.ForeignKey('Station', models.CASCADE,
-                                     verbose_name='监测点')
+                                     verbose_name='监测点',
+                                     null=True, blank=True)
     time_point = models.DateTimeField('发布时间')
     date = models.DateField('日期', default=datetime.date.today)
 
