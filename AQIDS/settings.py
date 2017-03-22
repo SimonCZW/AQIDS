@@ -25,7 +25,7 @@ SECRET_KEY = '4ebuia=o%2^n=06)c3#&@5#b73esp9!6yw@s_i!qy&h6i=5a5*'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['192.168.0.101']
+ALLOWED_HOSTS = ['192.168.1.112']
 
 # Application definition
 DJANGO_SETTINGS_MODULE = 'AQIDS.settings'
@@ -43,8 +43,10 @@ INSTALLED_APPS = [
 ]
 
 CRONJOBS = [
-    ('*/3 * * * *', 'catchdata.cron.get_and_store_gzepb_station', '>> /var/log/aqids.log'),
-    ('*/3 * * * *', 'catchdata.cron.get_and_store_aqicn_station', '>> /var/log/aqids.log'),
+    ('* * * * 1', 'catchdata.cron.get_and_store_gzepb_station', '>> /var/log/aqids.log'),
+    ('* * * * 1', 'catchdata.cron.get_and_store_aqicn_station', '>> /var/log/aqids.log'),
+    ('*/30 * * * *', 'catchdata.cron.get_and_store_aqicn_aqi', '>> /var/log/aqids.log'),
+    ('*/30 * * * *', 'catchdata.cron.get_and_store_gzepb_aqi', '>> /var/log/aqids.log'),
 ]
 CRONTAB_LOCK_JOBS = True
 
