@@ -5,25 +5,21 @@ from django.db import models
 import datetime
 
 # Create your models here.
-class AqiStandardBase(models.Model):
-    quality = models.CharField('空气质量等级', primary_key=True, max_length=20)
-    message = models.CharField('建议信息', max_length=255)
+class AqiStandard(models.Model):
+    aqi_range = models.CharField('AQI范围', max_length=20)
+    usa_quality = models.CharField('美国标准空气质量等级', max_length=20)
+    china_quality = models.CharField('中国标准空气质量等级', max_length=20)
+    color = models.CharField('等级颜色', max_length=5)
+    message = models.CharField('对健康影响', max_length=255)
+    advice = models.CharField('建议措施', max_length=255)
 
     def __unicode__(self):
-        return self.quality
+        return "%s/%s" % (self.china_quality, self.usa_quality)
 
     class Meta:
-        abstract = True
-
-class ChinaStandard(AqiStandardBase):
-    class Meta:
-        db_table = 'chinastandard'
+        db_table = 'aqistandard'
         app_label = 'mainapp'
 
-class USAStandard(AqiStandardBase):
-    class Meta:
-        db_table = 'usastandard'
-        app_label = 'mainapp'
 
 class Station(models.Model):
     STATION_TYPES = (
@@ -79,7 +75,7 @@ class GzepbAqiData(models.Model):
     aqi = models.FloatField('AQI值', blank=True, null=True)
     dominentpol = models.CharField('主要污染物', max_length=50,
                                    blank=True, null=True)
-    quality = models.ForeignKey('ChinaStandard', on_delete=models.DO_NOTHING,
+    quality = models.ForeignKey('AqiStandard', on_delete=models.DO_NOTHING,
                                 verbose_name='空气质量等级')
 
     so2_1h = models.FloatField('so2 1h浓度', blank=True, null=True)
@@ -124,7 +120,7 @@ class AqicnIAqiData(models.Model):
     aqi = models.FloatField('AQI值', blank=True, null=True, default=None)
     dominentpol = models.CharField('主要污染物', max_length=50, blank=True,
                                    null=True)
-    quality = models.ForeignKey('USAStandard', on_delete=models.DO_NOTHING,
+    quality = models.ForeignKey('AqiStandard', on_delete=models.DO_NOTHING,
                                 verbose_name='空气质量等级')
 
     pm25_iaqi = models.FloatField('pm25 iaqi值(1h)', blank=True, null=True)
