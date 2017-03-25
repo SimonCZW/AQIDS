@@ -76,7 +76,7 @@ class AqicnIAqiDataAdmin(admin.ModelAdmin):
                        'dominentpol', 'pm25_iaqi', 'pm10_iaqi', 'o3_iaqi',
                        'no2_iaqi', 'so2_iaqi', 'co_iaqi', 'temperature', 'dew',
                        'atmospheric_pressure', 'relative_humidity', 'wind')
-    raw_id_fields = ('station_name', 'quality')
+    # raw_id_fields = ('station_name', 'quality')
     # search foreignkey
     search_fields = ['station_name__station_name',
                      'station_name__station_type',
@@ -90,6 +90,30 @@ class GzepbAqiDataAdmin(admin.ModelAdmin):
             'fields': ('time_point', 'station_name', 'quality',
                        'aqi', 'dominentpol')
         }),
+        ('detail concentration', {
+            'classes': ('collapse',),
+            'fields': ('so2_1h', 'so2_24h', 'no2_1h', 'no2_24h', 'pm10_1h',
+                       'pm10_24h', 'co_1h', 'co_24h', 'o3_1h', 'o3_1h_24h',
+                       'o3_8h', 'o3_8h_24h', 'pm25_1h', 'pm25_24h')
+        }),
+        ('iaqi', {
+            'classes': ('collapse',),
+            'fields': ('pm25_iaqi', 'pm10_iaqi', 'o3_iaqi', 'no2_iaqi',
+                       'so2_iaqi', 'co_iaqi', 'o3_iaqi_8h')
+        }),
     )
+    list_display = ('time_point', 'station_name', 'quality', 'aqi',
+                    'dominentpol')
+    list_display_links = ('aqi',)
+    list_filter = ('quality', 'dominentpol', 'station_name')
+    readonly_fields = ('time_point', 'station_name', 'quality', 'aqi',
+                       'dominentpol', 'so2_1h', 'so2_24h', 'no2_1h', 'no2_24h',
+                       'pm10_1h', 'pm10_24h', 'co_1h', 'co_24h', 'o3_1h',
+                       'o3_1h_24h', 'o3_8h', 'o3_8h_24h', 'pm25_1h', 'pm25_24h',
+                       'pm25_iaqi', 'pm10_iaqi', 'o3_iaqi', 'no2_iaqi',
+                       'so2_iaqi', 'co_iaqi', 'o3_iaqi_8h')
+    search_fields = ['station_name__station_name',
+                     'station_name__station_type',
+                     'station_name__display_name']
 admin.site.register(GzepbAqiData, GzepbAqiDataAdmin)
 # myadmin_site.register(AqiStandard, GzepbAqiDataAdmin)
