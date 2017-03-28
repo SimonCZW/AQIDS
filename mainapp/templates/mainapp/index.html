@@ -1,1 +1,10 @@
 <h1>Hello AQIDS</h1>
+
+
+{% for i in lastest_gzepb_data %}
+<p>{{ i.station_name }} {{ i.aqi }} </p>
+{% endfor %}
+
+{% for x in lastest_aqicn_data %}
+<p>{{ x.station_name }} {{ x.aqi }} </p>
+{% endfor %}
