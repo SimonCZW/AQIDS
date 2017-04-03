@@ -1,0 +1,41 @@
+<h1>Hello AQIDS</h1>
+
+
+<!--主体内容-->
+<div>
+  <div>
+    <div>
+      <p>广州 各监测点实时数据</p>
+      <div>
+        <!-- 详细数据开始-->
+        <div>
+          <div>
+            <span>检测站点</span>
+            <span>空气质量状况</span>
+            <span>首要污染物</span>
+            <span>PM2.5浓度</span>
+            <span>PM10浓度</span>
+          </div>
+          <ul>
+          {% for station_data in lastest_gzepb_data %}
+            <li>
+              <a herf="#" title="查询详细数据">{{ station_data.station_name }}</a>
+              <span>{{ station_data.quality }}</span>
+              <span>{{ station_data.dominentpol }}</span>
+              <span>{{ station_data.pm25_1h }}</span>
+              <span>{{ station_data.pm10_1h }}</span>
+            </li>
+          {% endfor %}
+          </ul>
+
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+{% for x in lastest_aqicn_data %}
+<p>{{ x.station_name }} {{ x.aqi }} </p>
+{% endfor %}
+

@@ -1,10 +1,206 @@
-<h1>Hello AQIDS</h1>
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="zh-CN" xml:lang="zh-CN">
+{% load staticfiles %}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>绿色呼吸pm25.com, PM2.5(细颗粒物)及空气质量指数(AQI)实时查询！|绿色呼吸</title>
+    <meta name="Keywords" content="PM2.5,细颗粒物,雾霾,PM2.5浓度,PM2.5指数,PM2.5监测,空气质量,空气质量指数,空气污染,绿色呼吸">
+    <meta name="Description" content="绿色呼吸免费提供PM2.5实时数据查询,更收集分析关于PM2.5有关的一切报告和科研结论,力求以绵薄之力寻同呼吸共命运的你关注PM2.5,关注大气健康!">
+    <!-- 
+    <link href="http://www.pm25.com/css/common.css" rel="stylesheet" type="text/css">
+    <link href="http://www.pm25.com/css/citydata.css" rel="stylesheet" type="text/css">
+    -->
+    
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'mainapp/css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'mainapp/css/citydata.css' %}">
+
+    <!--
+    <script type="text/javascript" async="" charset="utf-8" src="http://c.cnzz.com/core.php?web_id=30089631&amp;t=q"></script>
+    <script src="http://www.pm25.com/sea-modules/seajs/seajs/2.2.1/sea.js"></script>
+    <script src="http://www.pm25.com/sea-modules/conf/common.js"></script>
+    -->
+
+</head>
+
+<body>
+    <div class="topnav_width">
+        <div class="topnav">
+            <div class="topnav_right">
+                <a class="topnav_map" href="/map.html">进入地图模式&gt;&gt;</a>
+            </div>
+        </div>
+    </div>
+    <!--banner上的阴影-->
+    <div class="banner_shadow"></div>
+
+    <script>
+    seajs.use(['$'], function() {
+        $(function() {
+
+            // 头部搜索
+            $('.topnav_search_btn').click(function() {
+                var str = encodeURI($('.topnav_search_city_text').val());
+                window.location = '/so/' + str + '/all';
+            });
+
+            $('.topnav_search_city_text').bind("keyup", function(event) {
+                if (event.keyCode == 13) {
+                    var str = encodeURI($('.topnav_search_city_text').val());
+                    window.location = '/so/' + str + '/all';
+                }
+            });
+
+            $(".topnav_sitemap").mouseover(function() {
+                $('.topnav_sitemap_active').show();
+            }).mouseout(function() {
+                $('.topnav_sitemap_active').hide();
+            });
+
+            $(".topnav_sitemap_active").mouseover(function() {
+                $('.topnav_sitemap_active').show();
+            }).mouseout(function() {
+                $('.topnav_sitemap_active').hide();
+            });
+
+            $(".topnav_phone").mouseover(function() {
+                $('.topnav_app_active').show();
+            }).mouseout(function() {
+                $('.topnav_app_active').hide();
+            });
+
+            $(".topnav_app_active").mouseover(function() {
+                $('.topnav_app_active').show();
+            }).mouseout(function() {
+                $('.topnav_app_active').hide();
+            });
+
+        });
+    });
+    </script>
 
 
-{% for i in lastest_gzepb_data %}
-<p>{{ i.station_name }} {{ i.aqi }} </p>
-{% endfor %}
+    <!--banner部分-->
+    <!--当前城市不同等级不同颜色背景"banner_bg_level3"这里后边的数字是1~6-->
+    <div class="citydata_banner_width banner_bg_level2">
+        <div class="citydata_banner">
+            <!-- 广州 -->
+            <div class="citydata_banner_top">
+                <div class="citydata_changecity">
+                  <!-- 切换城市按钮的js
+                    <a href="javascript:void(0)" class="minicity_clk"></a>
+                    -->
+                    <span class="city_name">广州</span>
+                    <span class="city_description">实时空气质量指数（AQI）</span>
+                </div>
 
-{% for x in lastest_aqicn_data %}
-<p>{{ x.station_name }} {{ x.aqi }} </p>
-{% endfor %}
+                <!-- 需改 -->
+                <!-- 更新时间 -->
+                <div class="citydata_updatetime">更新时间：2017-03-28 12:00</div>
+                
+                <div class="clear"></div>
+            </div>
+
+            <!--透明层-->
+            <div class="citydata_banner_opacity">
+
+                <div class="cbo_left">
+                  <!-- 需改 -->
+                  <!-- AQI值,需改动 -->
+                    <div class="cbol_aqi">
+                        <a class="cbol_aqi_num" href="/news/385.html" target="_blank">79</a>
+                        <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
+                    </div>
+                    <div class="cbol_wuranwu">
+                        <!--没有污染物数据的时候，增加个“cbol_wuranwu_nodata”，删掉里面内容再加个i标签"<i></i>"-->
+                        <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">PM10</a>
+                        <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
+                    </div>
+                    <div class="cbol_nongdu">
+                        <!--没有浓度数据的时候，增加个“cbol_nongdu_nodata”，删掉里面内容换成个i标签"<i></i>"-->
+                        <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                            <span class="cbol_nongdu_num_1">48</span>
+                            <span class="cbol_nongdu_num_2">微克/立方米</span>
+                        </a>
+                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                    </div>
+                </div>
+                <div class="cbo_right">
+                    <div class="cbor_gauge">
+                        <!--指针的位置不同的等级“cbor_gauge_level1”改后边的数字，里面的文字包含"优，良，轻度污染，中度污染，重度污染，严重污染"-->
+                        <span class="cbor_gauge_level2">良</span>
+                        <p class="cbor_gauge_img"></p>
+                        <p class="cbor_gauge_num">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;500</p>
+                    </div>
+                    <div class="cbor_tips">
+                        <p>
+                            <span>温馨提示：</span> 可以正常在户外活动，易敏感人群应减少外出。 </p>
+                    </div>
+                    
+                </div>
+                <div class="clear"></div>
+            </div>
+            <div class="cbo_opacity"></div>
+        </div>
+    </div>
+
+    <!--主体内容-->
+    <div class="main_width">  
+        <div class="main">
+            <!--监测点数据-->
+            <div class="panel_jiance">
+                <p class="pg_title">广州 各监测点实时数据</p>
+                <div class="pj_area ui-switchable" data-widget-cid="widget-1">
+                    <div class="pj_area_tab ui-switchable-nav">
+                        <a class="tab_caqi current ui-switchable-trigger" href="javascript:void(0)">中国标准<i></i></a>
+                        <!--
+                        <a class="tab_maqi ui-switchable-trigger" href="javascript:void(0)">美国标准<i></i></a>
+              -->
+                        <div class="clear"></div>
+                    </div>
+                    <p class="pj_area_links">
+                        <a href="/news/96.html" target="_blank">查看中美标准差异&gt;&gt;</a>
+                        <!--
+                        <a href="/news/291.html" target="_blank">本站数据来源及与其它网站的区别&gt;&gt;</a>
+                        -->
+                    </p>
+                    <!--详细数据开始-->
+                    <div class="pj_area_data ui-switchable-content">
+                        <div class="pj_area_data_title">
+                            <span class="pjadt_location">监测站点</span>
+                            <!--AQI指数有上下箭头，可以选择排序,a标签分别增加“aqi_arrow_top”和“aqi_arrow_down”,默认是没有这个类名的-->
+                            <a class="pjadt_aqi aqi_arrow_top" href="javascript:void(0)" style="cursor:default;">
+                                <span>AQI</span>
+                            </a>
+                            <span class="pjadt_quality">空气质量状况</span>
+                            <span class="pjadt_wuranwu">首要污染物</span>
+                            <span class="pjadt_pm25">PM2.5浓度</span>
+                            <span class="pjadt_pm10">PM10浓度</span>
+                            <div class="clear"></div>
+                        </div>
+                        <ul class="pj_area_data_details ui-switchable-panel">
+                            <!--鼠标划上去后，要有个li的背景变绿色效果，增加li的"pj_area_data_item_active"就行-->
+                            {% for station_data in lastest_aqicn_data %}
+                              <li class="pj_area_data_item pj_area_data_item_darkbg">
+                              <b></b>
+                                <a class="pjadt_location" href="/city/mon/aqi/广州/广雅中学.html" title="查看广雅中学详细数据">{{ station_data.station_name }}</a>
+                                <span class="pjadt_aqi">{{ station_data.aqi }}<i class=""></i></span>
+                                <span class="pjadt_quality"><em class="pjadt_quality_bglevel_2">{{ station_data.quality }}</em></span>
+                                  <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ station_data.dominentpol }}</a>
+                                  <span class="pjadt_pm25">{{ station_data.pm25_1h }} <em>μg/m³</em><i class=""></i></span>
+                                  <span class="pjadt_pm10">{{ station_data.pm10_1h }} <em>μg/m³</em><i class=""></i></span>
+                                  <div class="clear"></div>
+                                </li>                             
+                            {% endfor %}
+
+                        </ul>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+  </div>
+
+</html>
