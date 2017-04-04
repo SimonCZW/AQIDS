@@ -19,12 +19,33 @@
           <ul>
           {% for station_data in lastest_gzepb_data %}
             <li>
-              <a herf="#" title="查询详细数据">{{ station_data.station_name }}</a>
-              <span>{{ station_data.quality }}</span>
+              <a herf="#" title="查询详细数据">{{ station_data.station_name.display_name }}</a>
+              <span>{{ station_data.quality.color }}</span>
+              {% if station_data.quality.color == "黄色" %}
+                <p>{{ station_data.quality.color }}ppp</p>
+              {% else %}
+                <p>{{ station_data.quality.color }}</p>
+                <p>xxxx<p/>
+              {% endif %}
+
+              <!--
+              <span>{{ station_data.pm25_1h }}</span>
+              {% if "{{ station_data.pm25_1h }}" >= 12 %}
+                <p>{{ station_data.quality.aqi_range }}</p>
+              {% else %}
+                <p>{{ station_data.quality.aqi_range }}</p>
+                <p>y<p/>
+              {% endif %}
+              {% ifequal "{{ station_data.quality.aqi_range }}" "51-101" %}
+                <p>{{ station_data.quality.aqi_range }}</p>
+              {% endifequal %}
+              -->
+              <!--
               <span>{{ station_data.dominentpol }}</span>
               <span>{{ station_data.pm25_1h }}</span>
               <span>{{ station_data.pm10_1h }}</span>
-            </li>
+              -->
+              </li>
           {% endfor %}
           </ul>
 

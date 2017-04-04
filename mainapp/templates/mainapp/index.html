@@ -163,18 +163,23 @@
                         <a href="/news/291.html" target="_blank">本站数据来源及与其它网站的区别&gt;&gt;</a>
                         -->
                     </p>
+
                     <!--详细数据开始-->
                     <div class="pj_area_data ui-switchable-content">
                         <div class="pj_area_data_title">
-                            <span class="pjadt_location">监测站点</span>
+                            <span class="pjadt_location">美领馆监测站点</span>
                             <!--AQI指数有上下箭头，可以选择排序,a标签分别增加“aqi_arrow_top”和“aqi_arrow_down”,默认是没有这个类名的-->
                             <a class="pjadt_aqi aqi_arrow_top" href="javascript:void(0)" style="cursor:default;">
                                 <span>AQI</span>
                             </a>
                             <span class="pjadt_quality">空气质量状况</span>
                             <span class="pjadt_wuranwu">首要污染物</span>
+                            <!--
                             <span class="pjadt_pm25">PM2.5浓度</span>
                             <span class="pjadt_pm10">PM10浓度</span>
+                            -->
+                            <span class="pjadt_pm25">PM2.5 IAQI</span>
+                            <span class="pjadt_pm10">PM10 IAQI</span>
                             <div class="clear"></div>
                         </div>
                         <ul class="pj_area_data_details ui-switchable-panel">
@@ -182,18 +187,84 @@
                             {% for station_data in lastest_aqicn_data %}
                               <li class="pj_area_data_item pj_area_data_item_darkbg">
                               <b></b>
-                                <a class="pjadt_location" href="/city/mon/aqi/广州/广雅中学.html" title="查看广雅中学详细数据">{{ station_data.station_name }}</a>
+                                <a class="pjadt_location" href="/city/mon/aqi/广州/广雅中学.html" title="查看广雅中学详细数据">{{ station_data.station_name.display_name }}</a>
                                 <span class="pjadt_aqi">{{ station_data.aqi }}<i class=""></i></span>
-                                <span class="pjadt_quality"><em class="pjadt_quality_bglevel_2">{{ station_data.quality }}</em></span>
-                                  <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ station_data.dominentpol }}</a>
-                                  <span class="pjadt_pm25">{{ station_data.pm25_1h }} <em>μg/m³</em><i class=""></i></span>
-                                  <span class="pjadt_pm10">{{ station_data.pm10_1h }} <em>μg/m³</em><i class=""></i></span>
-                                  <div class="clear"></div>
-                                </li>                             
+
+                                {% if station_data.quality.color == "绿色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ station_data.quality.usa_quality }}</em></span>
+                                {% elif station_data.quality.color == "黄色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_2">{{ station_data.quality.usa_quality }}</em></span>
+                                {% elif station_data.quality.color == "橘色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_3">{{ station_data.quality.usa_quality }}</em></span>
+                                {% elif station_data.quality.color == "红色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_4">{{ station_data.quality.usa_quality }}</em></span>
+                                {% elif station_data.quality.color == "紫色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_5">{{ station_data.quality.usa_quality }}</em></span>
+                                {% elif station_data.quality.color == "枣红色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_6">{{ station_data.quality.usa_quality }}</em></span>
+                                {% else %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_6">{{ station_data.quality.usa_quality }}</em></span>
+                                {% endif %}
+                                <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ station_data.dominentpol }}</a>
+                                <span class="pjadt_pm25">{{ station_data.pm25_iaqi }} <i class=""></i></span>
+                                <span class="pjadt_pm10">{{ station_data.pm10_iaqi }} <i class=""></i></span>
+                                <!--
+                                <span class="pjadt_pm25">{{ station_data.pm25_1h }} <em>μg/m³</em><i class=""></i></span>
+                                <span class="pjadt_pm10">{{ station_data.pm10_1h }} <em>μg/m³</em><i class=""></i></span>
+                                -->
+                                <div class="clear"></div>
+                              </li>                             
                             {% endfor %}
-
                         </ul>
+                    </div>
+                    <!-- gzepb  -->
+                    <div class="pj_area_data ui-switchable-content">
+                        <div class="pj_area_data_title">
+                            <span class="pjadt_location">Gzepb监测站点</span>
+                            <!--AQI指数有上下箭头，可以选择排序,a标签分别增加“aqi_arrow_top”和“aqi_arrow_down”,默认是没有这个类名的-->
+                            <a class="pjadt_aqi aqi_arrow_top" href="javascript:void(0)" style="cursor:default;">
+                                <span>AQI</span>
+                            </a>
+                            <span class="pjadt_quality">空气质量状况</span>
+                            <span class="pjadt_wuranwu">首要污染物</span>
+                            <!--
+                            <span class="pjadt_pm25">PM2.5浓度</span>
+                            <span class="pjadt_pm10">PM10浓度</span>
+                            -->
+                            <span class="pjadt_pm25">PM2.5 IAQI</span>
+                            <span class="pjadt_pm10">PM10 IAQI</span>
+                            <div class="clear"></div>
+                        </div>
+                        <ul class="pj_area_data_details ui-switchable-panel">
+                            {% for station_data in lastest_gzepb_data %}
+                              <li class="pj_area_data_item pj_area_data_item_darkbg">
+                              <b></b>
+                                <a class="pjadt_location" href="/city/mon/aqi/广州/广雅中学.html" title="查看广雅中学详细数据">{{ station_data.station_name.display_name }}</a>
+                                <span class="pjadt_aqi">{{ station_data.aqi }}<i class=""></i></span>
 
+                                {% if station_data.quality.color == "绿色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ station_data.quality.china_quality }}</em></span>
+                                {% elif station_data.quality.color == "黄色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_2">{{ station_data.quality.china_quality }}</em></span>
+                                {% elif station_data.quality.color == "橘色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_3">{{ station_data.quality.china_quality }}</em></span>
+                                {% elif station_data.quality.color == "红色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_4">{{ station_data.quality.china_quality }}</em></span>
+                                {% elif station_data.quality.color == "紫色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_5">{{ station_data.quality.china_quality }}</em></span>
+                                {% elif station_data.quality.color == "枣红色" %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_6">{{ station_data.quality.china_quality }}</em></span>
+                                {% else %}
+                                  <span class="pjadt_quality"><em class="pjadt_quality_bglevel_6">{{ station_data.quality.china_quality }}</em></span>
+                                {% endif %}
+
+                                <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ station_data.dominentpol }}</a>
+                                <span class="pjadt_pm25">{{ station_data.pm25_iaqi }} <i class=""></i></span>
+                                <span class="pjadt_pm10">{{ station_data.pm10_iaqi }} <i class=""></i></span>
+                                <div class="clear"></div>
+                              </li>                             
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>
