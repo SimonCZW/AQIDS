@@ -5,10 +5,6 @@
     <title>绿色呼吸pm25.com, PM2.5(细颗粒物)及空气质量指数(AQI)实时查询！|绿色呼吸</title>
     <meta name="Keywords" content="PM2.5,细颗粒物,雾霾,PM2.5浓度,PM2.5指数,PM2.5监测,空气质量,空气质量指数,空气污染,绿色呼吸">
     <meta name="Description" content="绿色呼吸免费提供PM2.5实时数据查询,更收集分析关于PM2.5有关的一切报告和科研结论,力求以绵薄之力寻同呼吸共命运的你关注PM2.5,关注大气健康!">
-    <!-- 
-    <link href="http://www.pm25.com/css/common.css" rel="stylesheet" type="text/css">
-    <link href="http://www.pm25.com/css/citydata.css" rel="stylesheet" type="text/css">
-    -->
     
     {% load static %}
     <link rel="stylesheet" href="{% static 'mainapp/css/common.css' %}">
@@ -81,7 +77,24 @@
 
     <!--banner部分-->
     <!--当前城市不同等级不同颜色背景"banner_bg_level3"这里后边的数字是1~6-->
-    <div class="citydata_banner_width banner_bg_level2">
+    <!--
+      <div class="citydata_banner_width banner_bg_level2">
+    -->
+  {% with gzepb_quality=gzepb_city_average.quality.china_quality %}
+    {% if gzepb_quality == "优" %}
+      <div class="citydata_banner_width banner_bg_level1">
+    {% elif gzepb_quality == "良" %}
+      <div class="citydata_banner_width banner_bg_level2">
+    {% elif gzepb_quality == "轻度污染" %}
+      <div class="citydata_banner_width banner_bg_level3">
+    {% elif gzepb_quality == "中度污染" %}
+      <div class="citydata_banner_width banner_bg_level4">
+    {% elif gzepb_quality == "重度污染" %}
+      <div class="citydata_banner_width banner_bg_level5">
+    {% elif gzepb_quality == "严重污染" %}
+      <div class="citydata_banner_width banner_bg_level6">
+    {% endif %}
+  {% endwith %}
         <div class="citydata_banner">
             <!-- 广州 -->
             <div class="citydata_banner_top">
@@ -93,10 +106,9 @@
                     <span class="city_description">实时空气质量指数（AQI）</span>
                 </div>
 
-                <!-- 需改 -->
                 <!-- 更新时间 -->
-                <div class="citydata_updatetime">更新时间：2017-03-28 12:00</div>
-                
+                <div class="citydata_updatetime">更新时间：{{ gzepb_time_point }}</div>
+
                 <div class="clear"></div>
             </div>
 
@@ -107,33 +119,58 @@
                   <!-- 需改 -->
                   <!-- AQI值,需改动 -->
                     <div class="cbol_aqi">
-                        <a class="cbol_aqi_num" href="/news/385.html" target="_blank">79</a>
-                        <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
+                      <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ gzepb_city_average.aqi|add:0 }}</a>
+                      <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
                     </div>
                     <div class="cbol_wuranwu">
-                        <!--没有污染物数据的时候，增加个“cbol_wuranwu_nodata”，删掉里面内容再加个i标签"<i></i>"-->
-                        <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">PM10</a>
-                        <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
+                      <!--没有污染物数据的时候，增加个“cbol_wuranwu_nodata”，删掉里面内容再加个i标签"<i></i>"-->
+                      {% if gzepb_city_average.dominentpol %}
+                        <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ gzepb_city_average.dominentpol }}</a>
+                      {% else %}
+                        <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+                      {% endif %}
+                      <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
                     </div>
                     <div class="cbol_nongdu">
-                        <!--没有浓度数据的时候，增加个“cbol_nongdu_nodata”，删掉里面内容换成个i标签"<i></i>"-->
-                        <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
-                            <span class="cbol_nongdu_num_1">48</span>
-                            <span class="cbol_nongdu_num_2">微克/立方米</span>
-                        </a>
-                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                      <!--没有浓度数据的时候，增加个“cbol_nongdu_nodata”，删掉里面内容换成个i标签"<i></i>"-->
+                      <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                        <span class="cbol_nongdu_num_1">{{ gzepb_city_average.pm25_1h|add:0 }}</span>
+                        <span class="cbol_nongdu_num_2">微克/立方米</span>
+                      </a>
+                      <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
                     </div>
                 </div>
                 <div class="cbo_right">
                     <div class="cbor_gauge">
                         <!--指针的位置不同的等级“cbor_gauge_level1”改后边的数字，里面的文字包含"优，良，轻度污染，中度污染，重度污染，严重污染"-->
+                        <!--
                         <span class="cbor_gauge_level2">良</span>
+                        -->
+                        {% with gzepb_quality=gzepb_city_average.quality.china_quality %}
+                          {% if gzepb_quality == "优" %}
+                            <span class="cbor_gauge_level1">{{ gzepb_quality }}</span>
+                          {% elif gzepb_quality == "良" %}
+                            <span class="cbor_gauge_level2">{{ gzepb_quality }}</span>
+                          {% elif gzepb_quality == "轻度污染" %}
+                            <span class="cbor_gauge_level3">{{ gzepb_quality }}</span>
+                          {% elif gzepb_quality == "中度污染" %}
+                            <span class="cbor_gauge_level4">{{ gzepb_quality }}</span>
+                          {% elif gzepb_quality == "重度污染" %}
+                            <span class="cbor_gauge_level5">{{ gzepb_quality }}</span>
+                          {% elif gzepb_quality == "严重污染" %}
+                            <span class="cbor_gauge_level6">{{ gzepb_quality }}</span>
+                          {% endif %}
+                        {% endwith %}
+
                         <p class="cbor_gauge_img"></p>
                         <p class="cbor_gauge_num">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;500</p>
                     </div>
                     <div class="cbor_tips">
-                        <p>
-                            <span>温馨提示：</span> 可以正常在户外活动，易敏感人群应减少外出。 </p>
+                      <p>
+                      <!--
+                        <span>温馨提示：</span> 可以正常在户外活动，易敏感人群应减少外出。 </p>
+                      -->
+                        <span>温馨提示：</span>{{ gzepb_city_average.quality.advice }}。 </p>
                     </div>
                     
                 </div>
