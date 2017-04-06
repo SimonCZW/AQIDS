@@ -52,16 +52,14 @@
     position: absolute;
     width: 980px;
     height: 50px;
-    /*top: 160px;
-  */
-  top: 70px;
+    top: 70px;
     left: auto;
 }
 
 .citydata_changecity {
     float: left;
     display: inline;
-    width: 750px;
+    width: 740px;
 }
 
 .citydata_changecity a {
@@ -98,11 +96,21 @@
 }
 
 .citydata_updatetime {
-    float: right;
     display: inline;
+    float: right;
+    margin-top: 15px;
+}
+
+.citydata_updatetime_1 {
     font-size: 14px;
     color: #fff;
-    margin-top: 28px;
+    text-align: right;
+}
+
+.citydata_updatetime_2 {
+    font-size: 14px;
+    color: #fff;
+    text-align: right;
 }
 
 .cbo_opacity {
@@ -145,10 +153,7 @@
     font-size: 45px;
     width: 120px;
     height: 120px;
-    /*
     background: url(../images/citydate_sprite.png) -18px -35px no-repeat;
-  */
-  background: url(../images/citydate_sprite.png) -18px -35px no-repeat;
 }
 
 .cbol_aqi_name,
@@ -183,9 +188,6 @@ a.cbol_wuranwu_num,
     height: 105px;
     text-align: center;
     line-height: 105px;
-    /*
-    background: url(../images/citydate_sprite.png) -181px -44px no-repeat;
-    */
     background: url(../images/citydate_sprite.png) -181px -44px no-repeat;
     -webkit-transition: none;
     -moz-transition: none;
@@ -209,21 +211,24 @@ a.cbol_nongdu_nodata:hover {
     background-position: -181px -44px;
 }
 
+p.cbol_aqi_nodata i,
 a.cbol_wuranwu_nodata i,
 a.cbol_nongdu_nodata i {
     float: left;
     display: inline;
     width: 100px;
     height: 100px;
-    /*
-    background: url(../images/citydate_sprite.png) -440px -150px no-repeat;
-    */
     background: url(../images/citydate_sprite.png) -440px -150px no-repeat;
     margin: 27px 0px 0px 25px;
 }
 
+
 a.cbol_nongdu_nodata i {
-    margin: 0px 0px 0px 25px;
+    margin: -3px 0px 0px 25px;
+}
+
+p.cbol_aqi_nodata i {
+    margin: 35px 0px 0px 32px;
 }
 
 .cbol_wuranwu_name {
@@ -244,6 +249,12 @@ a.cbol_nongdu_nodata i {
 .cbol_nongdu_num_1 {
     display: block;
     font-size: 36px;
+}
+
+.cbol_nongdu_num_iaqi {
+    display: block;
+    font-size: 36px;
+    line-height: 44px;
 }
 
 .cbol_nongdu_num_2 {
