@@ -2,6 +2,7 @@
 from __future__ import unicode_literals
 
 from django.db import models
+from django.urls import reverse
 import datetime
 
 # Create your models here.
@@ -59,6 +60,10 @@ class Station(models.Model):
         if self.display_name == '':
             self.display_name = self.station_name
         super(Station, self).save(*args, **kwargs)
+
+    def get_absolute_url(self):
+            return reverse('mainapp:station',
+                           kwargs={'display_name': self.display_name})
 
     class Meta:
         db_table = 'stations'
