@@ -37,37 +37,43 @@ class IndexView(TemplateView):
                     - datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:00:00")
         if GzepbAqiData.objects.filter(time_point=hour_now).exists():
             context['lastest_gzepb_data'] = GzepbAqiData.objects.filter(
-                time_point=hour_now).exclude(
-                    station_name__display_name="全市平均")
+                time_point=hour_now)#.exclude(
+                    # station_name__display_name="全市平均")
             context['gzepb_time_point'] = hour_now
-            context['gzepb_city_average'] = GzepbAqiData.objects.get(
-                time_point=hour_now, station_name__display_name="全市平均")
-            # switch dominentpol
-            context['gzepb_city_average'].dominentpol = self.sw_gzepb_dominent(
-                context['gzepb_city_average'].dominentpol)
+            if GzepbAqiData.objects.filter(
+                    time_point=hour_now,
+                    station_name__display_name="全市平均").exists():
+                context['gzepb_city_average'] = GzepbAqiData.objects.get(
+                    time_point=hour_now, station_name__display_name="全市平均")
+                # switch dominentpol
+                context['gzepb_city_average'].dominentpol = self.sw_gzepb_dominent(
+                    context['gzepb_city_average'].dominentpol)
 
         elif GzepbAqiData.objects.filter(time_point=hour_ago).exists():
             context['lastest_gzepb_data'] = GzepbAqiData.objects.filter(
-                time_point=hour_ago).exclude(
-                    station_name__display_name="全市平均")
+                time_point=hour_ago)#.exclude(
+                    # station_name__display_name="全市平均")
             context['gzepb_time_point'] = hour_ago
-            context['gzepb_city_average'] = GzepbAqiData.objects.get(
-                time_point=hour_ago, station_name__display_name="全市平均")
-            # switch dominentpol
-            context['gzepb_city_average'].dominentpol = self.sw_gzepb_dominent(
-                context['gzepb_city_average'].dominentpol)
+            if GzepbAqiData.objects.filter(
+                    time_point=hour_ago,
+                    station_name__display_name="全市平均").exists():
+                context['gzepb_city_average'] = GzepbAqiData.objects.get(
+                    time_point=hour_ago, station_name__display_name="全市平均")
+                # switch dominentpol
+                context['gzepb_city_average'].dominentpol = self.sw_gzepb_dominent(
+                    context['gzepb_city_average'].dominentpol)
 
         if AqicnIAqiData.objects.filter(time_point=hour_now).exists():
             context['lastest_aqicn_data'] = AqicnIAqiData.objects.filter(
-                time_point=hour_now).exclude(
-                    station_name__display_name="广州均值")
+                time_point=hour_now)#.exclude(
+                    # station_name__display_name="广州均值")
             context['aqicn_time_point'] = hour_now
             context['aqicn_city_average'] = AqicnIAqiData.objects.get(
                 time_point=hour_now, station_name__display_name="广州均值")
         elif AqicnIAqiData.objects.filter(time_point=hour_ago).exists():
             context['lastest_aqicn_data'] = AqicnIAqiData.objects.filter(
-                time_point=hour_ago).exclude(
-                    station_name__display_name="广州均值")
+                time_point=hour_ago)#.exclude(
+                    # station_name__display_name="广州均值")
             context['aqicn_time_point'] = hour_ago
             context['aqicn_city_average'] = AqicnIAqiData.objects.get(
                 time_point=hour_ago, station_name__display_name="广州均值")
@@ -98,4 +104,20 @@ class TestIndexView(TemplateView):
             context['lastest_aqicn_data'] = AqicnIAqiData.objects.filter(
                 time_point=hour_ago)
 
+        return context
+
+class StationView(TemplateView):
+    template_name = "mainapp/station.html"
+
+    def get_context_data(self, **kwargs):
+        context = super(StationView, self).get_context_data(**kwargs)
+
+        aqicn_station_data = AqicnIAqiData.objects.filter(
+            station_name__display_name = self.kwargs['display_name'])
+        gzepb_station_data = GzepbAqiData.objects.filter(
+            station_name__display_name = self.kwargs['display_name'])
+        if aqicn_station_data.exists():
+            context['aqicn_station_data'] = aqicn_station_data
+        if gzepb_station_data.exists():
+            context['gzepb_station_data'] = gzepb_station_data
         return context
