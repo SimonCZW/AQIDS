@@ -76,39 +76,66 @@
 
 
     <!--banner部分-->
-    <!--当前城市不同等级不同颜色背景"banner_bg_level3"这里后边的数字是1~6-->
-    <!--
-      <div class="citydata_banner_width banner_bg_level2">
-    -->
-  {% with gzepb_quality=gzepb_city_average.quality.china_quality %}
-    {% if gzepb_quality == "优" %}
+
+    <!--banner 背景颜色 -->
+    {% if gzepb_city_average %}
+      {% with gzepb_quality=gzepb_city_average.quality.china_quality %}
+        {% if gzepb_quality == "优" %}
+          <div class="citydata_banner_width banner_bg_level1">
+        {% elif gzepb_quality == "良" %}
+          <div class="citydata_banner_width banner_bg_level2">
+        {% elif gzepb_quality == "轻度污染" %}
+          <div class="citydata_banner_width banner_bg_level3">
+        {% elif gzepb_quality == "中度污染" %}
+          <div class="citydata_banner_width banner_bg_level4">
+        {% elif gzepb_quality == "重度污染" %}
+          <div class="citydata_banner_width banner_bg_level5">
+        {% elif gzepb_quality == "严重污染" %}
+          <div class="citydata_banner_width banner_bg_level6">
+        {% else %}
+          <div class="citydata_banner_width banner_bg_level1">
+        {% endif %}
+      {% endwith %}
+    {% elif aqicn_city_average %}
+      {% with aqicn_quality=aqicn_city_average.quality.china_quality %}
+        {% if aqicn_quality == "优" %}
+          <div class="citydata_banner_width banner_bg_level1">
+        {% elif aqicn_quality == "良" %}
+          <div class="citydata_banner_width banner_bg_level2">
+        {% elif aqicn_quality == "轻度污染" %}
+          <div class="citydata_banner_width banner_bg_level3">
+        {% elif aqicn_quality == "中度污染" %}
+          <div class="citydata_banner_width banner_bg_level4">
+        {% elif aqicn_quality == "重度污染" %}
+          <div class="citydata_banner_width banner_bg_level5">
+        {% elif aqicn_quality == "严重污染" %}
+          <div class="citydata_banner_width banner_bg_level6">
+        {% else %}
+          <div class="citydata_banner_width banner_bg_level1">
+        {% endif %}
+      {% endwith %}
+    {% else %}
       <div class="citydata_banner_width banner_bg_level1">
-    {% elif gzepb_quality == "良" %}
-      <div class="citydata_banner_width banner_bg_level2">
-    {% elif gzepb_quality == "轻度污染" %}
-      <div class="citydata_banner_width banner_bg_level3">
-    {% elif gzepb_quality == "中度污染" %}
-      <div class="citydata_banner_width banner_bg_level4">
-    {% elif gzepb_quality == "重度污染" %}
-      <div class="citydata_banner_width banner_bg_level5">
-    {% elif gzepb_quality == "严重污染" %}
-      <div class="citydata_banner_width banner_bg_level6">
     {% endif %}
-  {% endwith %}
+        <!-- banner内容开始-->
         <div class="citydata_banner">
             <!-- 广州 -->
             <div class="citydata_banner_top">
                 <div class="citydata_changecity">
-                  <!-- 切换城市按钮的js
-                    <a href="javascript:void(0)" class="minicity_clk"></a>
-                    -->
-                    <span class="city_name">广州</span>
-                    <span class="city_description">实时空气质量指数（AQI）</span>
+                  <span class="city_name">广州</span>
+                  {% if gzepb_city_average %}
+                    <span class="city_description">发布中心:实时空气质量指数（AQI）</span>
+                  {% elif aqicn_city_average %}
+                    <span class="city_description">美领馆：实时空气质量指数（AQI）</span>
+                  {% else %}
+                    <span class="city_description">暂无平均数据</span>
+                  {% endif %}
                 </div>
 
-                <!-- 更新时间 -->
-                <div class="citydata_updatetime">更新时间：{{ gzepb_time_point }}</div>
-
+                <div class="citydata_updatetime">
+                  <div class="citydata_updatetime_1">广州发布更新：{{ gzepb_time_point }}</div>
+                  <div class="citydata_updatetime_2">美领馆更新：{{ aqicn_time_point }}</div>
+                </div>
                 <div class="clear"></div>
             </div>
 
@@ -116,61 +143,137 @@
             <div class="citydata_banner_opacity">
 
                 <div class="cbo_left">
-                  <!-- 需改 -->
-                  <!-- AQI值,需改动 -->
-                    <div class="cbol_aqi">
-                      <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ gzepb_city_average.aqi|add:0 }}</a>
-                      <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
-                    </div>
-                    <div class="cbol_wuranwu">
-                      <!--没有污染物数据的时候，增加个“cbol_wuranwu_nodata”，删掉里面内容再加个i标签"<i></i>"-->
+                  <!-- AQI值 -->
+                  <div class="cbol_aqi">
+                    {% if gzepb_city_average %}
+                      {% if gzepb_city_average.aqi %}
+                        <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ gzepb_city_average.aqi|add:0 }}</a>
+                      {% else %}
+                       <i></i>  
+                      {% endif %}
+                    {% elif aqicn_city_average %}
+                      {% if aqicn_city_average.aqi %}
+                        <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ aqicn_city_average.aqi|add:0 }}</a>
+                      {% else %}
+                       <i></i>  
+                      {% endif %}
+                    {% else %}
+                      <p class="cbol_aqi_num cbol_aqi_nodata"><i></i></p>
+                    {% endif %}
+                    <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
+                  </div>
+                  
+                  <!-- 首要污染物 -->
+                  <div class="cbol_wuranwu">
+                    <!--没有污染物数据的时候，增加个“cbol_wuranwu_nodata”，删掉里面内容再加个i标签"<i></i>"-->
+                    {% if gzepb_city_average %}
                       {% if gzepb_city_average.dominentpol %}
                         <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ gzepb_city_average.dominentpol }}</a>
                       {% else %}
                         <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
                       {% endif %}
-                      <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
-                    </div>
-                    <div class="cbol_nongdu">
-                      <!--没有浓度数据的时候，增加个“cbol_nongdu_nodata”，删掉里面内容换成个i标签"<i></i>"-->
-                      <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
-                        <span class="cbol_nongdu_num_1">{{ gzepb_city_average.pm25_1h|add:0 }}</span>
-                        <span class="cbol_nongdu_num_2">微克/立方米</span>
-                      </a>
-                      <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
-                    </div>
+                    {% elif aqicn_city_average %}
+                      {% if aqicn_city_average.dominentpol %}
+                        <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ aqicn_city_average.dominentpol|upper }}</a>
+                      {% else %}
+                        <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+                      {% endif %}
+                    {% else %}
+                      <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+                    {% endif %}
+                    <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
+                  </div>
+
+                  <!-- PM2.5浓度/IAQI值 -->
+                  <div class="cbol_nongdu">
+                    {% if gzepb_city_average %}
+                      {% if gzepb_city_average.pm25_1h %}
+                        <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                          <span class="cbol_nongdu_num_1">{{ gzepb_city_average.pm25_1h|add:0 }}</span>
+                          <span class="cbol_nongdu_num_2">微克/立方米</span>
+                        </a>
+                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                      {% else %}
+                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                          <i></i>
+                        </a>
+                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                      {% endif %}
+                    {% elif aqicn_city_average %}
+                      {% if aqicn_city_average.pm25_iaqi %}
+                        <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                          <span class="cbol_nongdu_num_iaqi">{{ aqicn_city_average.pm25_iaqi|add:0 }}</span>
+                        </a>
+                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5 IAQI</a>
+                      {% else %}
+                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                          <i></i>
+                        </a>
+                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5 IAQI</a>
+                      {% endif %} 
+                    {% else %}
+                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                          <i></i>
+                        </a>
+                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                    {% endif %}
+                  </div>
                 </div>
+                
+                <!-- 右边 -->
                 <div class="cbo_right">
                     <div class="cbor_gauge">
-                        <!--指针的位置不同的等级“cbor_gauge_level1”改后边的数字，里面的文字包含"优，良，轻度污染，中度污染，重度污染，严重污染"-->
-                        <!--
-                        <span class="cbor_gauge_level2">良</span>
-                        -->
-                        {% with gzepb_quality=gzepb_city_average.quality.china_quality %}
-                          {% if gzepb_quality == "优" %}
-                            <span class="cbor_gauge_level1">{{ gzepb_quality }}</span>
-                          {% elif gzepb_quality == "良" %}
-                            <span class="cbor_gauge_level2">{{ gzepb_quality }}</span>
-                          {% elif gzepb_quality == "轻度污染" %}
-                            <span class="cbor_gauge_level3">{{ gzepb_quality }}</span>
-                          {% elif gzepb_quality == "中度污染" %}
-                            <span class="cbor_gauge_level4">{{ gzepb_quality }}</span>
-                          {% elif gzepb_quality == "重度污染" %}
-                            <span class="cbor_gauge_level5">{{ gzepb_quality }}</span>
-                          {% elif gzepb_quality == "严重污染" %}
-                            <span class="cbor_gauge_level6">{{ gzepb_quality }}</span>
+                      {% if gzepb_city_average %}
+                        {% with quality=gzepb_city_average.quality.china_quality %}
+                          {% if quality == "优" %}
+                            <span class="cbor_gauge_level1">{{ quality }}</span>
+                          {% elif quality == "良" %}
+                            <span class="cbor_gauge_level2">{{ quality }}</span>
+                          {% elif quality == "轻度污染" %}
+                            <span class="cbor_gauge_level3">{{ quality }}</span>
+                          {% elif quality == "中度污染" %}
+                            <span class="cbor_gauge_level4">{{ quality }}</span>
+                          {% elif quality == "重度污染" %}
+                            <span class="cbor_gauge_level5">{{ quality }}</span>
+                          {% elif quality == "严重污染" %}
+                            <span class="cbor_gauge_level6">{{ quality }}</span>
+                          {% else %}
+                            <span class="cbor_gauge_level1">暂无数据</span>
                           {% endif %}
                         {% endwith %}
+                      {% elif aqicn_city_average %}
+                        {% with quality=aqicn_city_average.quality.china_quality %}
+                          {% if quality == "优" %}
+                            <span class="cbor_gauge_level1">{{ quality }}</span>
+                          {% elif quality == "良" %}
+                            <span class="cbor_gauge_level2">{{ quality }}</span>
+                          {% elif quality == "轻度污染" %}
+                            <span class="cbor_gauge_level3">{{ quality }}</span>
+                          {% elif quality == "中度污染" %}
+                            <span class="cbor_gauge_level4">{{ quality }}</span>
+                          {% elif quality == "重度污染" %}
+                            <span class="cbor_gauge_level5">{{ quality }}</span>
+                          {% elif quality == "严重污染" %}
+                            <span class="cbor_gauge_level6">{{ quality }}</span>
+                          {% else %}
+                            <span class="cbor_gauge_level1">暂无数据</span>
+                          {% endif %}
+                        {% endwith %}
+                      {% endif %}
 
                         <p class="cbor_gauge_img"></p>
                         <p class="cbor_gauge_num">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;500</p>
                     </div>
                     <div class="cbor_tips">
                       <p>
-                      <!--
-                        <span>温馨提示：</span> 可以正常在户外活动，易敏感人群应减少外出。 </p>
-                      -->
-                        <span>温馨提示：</span>{{ gzepb_city_average.quality.advice }}。 </p>
+                        {% if gzepb_city_average %}
+                          <span>温馨提示：</span>{{ gzepb_city_average.quality.advice }}
+                        {% elif aqicn_city_average %}
+                          <span>温馨提示：</span>{{ aqicn_city_average.quality.advice }}
+                        {% else %}
+                          <span></span>
+                        {% endif %}
+                      </p>
                     </div>
                     
                 </div>
@@ -224,7 +327,7 @@
                             {% for station_data in lastest_aqicn_data %}
                               <li class="pj_area_data_item pj_area_data_item_darkbg">
                               <b></b>
-                                <a class="pjadt_location" href="/city/mon/aqi/广州/广雅中学.html" title="查看广雅中学详细数据">{{ station_data.station_name.display_name }}</a>
+                              <a class="pjadt_location" href="{{ station_data.station_name.get_absolute_url }}" title="查看广雅中学详细数据">{{ station_data.station_name.display_name }}</a>
                                 <span class="pjadt_aqi">{{ station_data.aqi }}<i class=""></i></span>
 
                                 {% if station_data.quality.color == "绿色" %}
@@ -276,7 +379,7 @@
                             {% for station_data in lastest_gzepb_data %}
                               <li class="pj_area_data_item pj_area_data_item_darkbg">
                               <b></b>
-                                <a class="pjadt_location" href="/city/mon/aqi/广州/广雅中学.html" title="查看广雅中学详细数据">{{ station_data.station_name.display_name }}</a>
+                              <a class="pjadt_location" href="{{ station_data.station_name.get_absolute_url }}" title="查看广雅中学详细数据">{{ station_data.station_name.display_name }}</a>
                                 <span class="pjadt_aqi">{{ station_data.aqi }}<i class=""></i></span>
 
                                 {% if station_data.quality.color == "绿色" %}
