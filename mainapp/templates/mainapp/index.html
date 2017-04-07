@@ -9,12 +9,8 @@
     {% load static %}
     <link rel="stylesheet" href="{% static 'mainapp/css/common.css' %}">
     <link rel="stylesheet" href="{% static 'mainapp/css/citydata.css' %}">
-
-    <!--
-    <script type="text/javascript" async="" charset="utf-8" src="http://c.cnzz.com/core.php?web_id=30089631&amp;t=q"></script>
-    <script src="http://www.pm25.com/sea-modules/seajs/seajs/2.2.1/sea.js"></script>
-    <script src="http://www.pm25.com/sea-modules/conf/common.js"></script>
-    -->
+    
+    <script src="{% static 'mainapp/js/echarts.js' %}"></script> 
 
 </head>
 
@@ -28,55 +24,7 @@
     </div>
     <!--banner上的阴影-->
     <div class="banner_shadow"></div>
-
-    <script>
-    seajs.use(['$'], function() {
-        $(function() {
-
-            // 头部搜索
-            $('.topnav_search_btn').click(function() {
-                var str = encodeURI($('.topnav_search_city_text').val());
-                window.location = '/so/' + str + '/all';
-            });
-
-            $('.topnav_search_city_text').bind("keyup", function(event) {
-                if (event.keyCode == 13) {
-                    var str = encodeURI($('.topnav_search_city_text').val());
-                    window.location = '/so/' + str + '/all';
-                }
-            });
-
-            $(".topnav_sitemap").mouseover(function() {
-                $('.topnav_sitemap_active').show();
-            }).mouseout(function() {
-                $('.topnav_sitemap_active').hide();
-            });
-
-            $(".topnav_sitemap_active").mouseover(function() {
-                $('.topnav_sitemap_active').show();
-            }).mouseout(function() {
-                $('.topnav_sitemap_active').hide();
-            });
-
-            $(".topnav_phone").mouseover(function() {
-                $('.topnav_app_active').show();
-            }).mouseout(function() {
-                $('.topnav_app_active').hide();
-            });
-
-            $(".topnav_app_active").mouseover(function() {
-                $('.topnav_app_active').show();
-            }).mouseout(function() {
-                $('.topnav_app_active').hide();
-            });
-
-        });
-    });
-    </script>
-
-
     <!--banner部分-->
-
     <!--banner 背景颜色 -->
     {% if gzepb_city_average %}
       {% with gzepb_quality=gzepb_city_average.quality.china_quality %}
@@ -299,9 +247,6 @@
                     </div>
                     <p class="pj_area_links">
                         <a href="/news/96.html" target="_blank">查看中美标准差异&gt;&gt;</a>
-                        <!--
-                        <a href="/news/291.html" target="_blank">本站数据来源及与其它网站的区别&gt;&gt;</a>
-                        -->
                     </p>
 
                     <!--详细数据开始-->
@@ -408,10 +353,150 @@
                     </div>
                 </div>
             </div>
+            <!-- 曲线图 -->
+            <p class="pg_title">广州 空气质量指数(AQI)变化趋势</p>
+            <div class="pg_area">
+              <div class="pg_area_tab" id="myTab0">
+                <a class="active current">最近24小时<i></i></a>
+                <a class="normal">最近30天<i></i></a>
+                <div class="clear"></div>
+              </div>
+              <div id="myTab0_Content0">
+                <div id="pg_content_24h" class="pg_content" style="background-color:#f7f7f7;"></div>
+              </div>
+              <div id="myTab0_Content1" class="none">
+                <div id="pg_content_30d" class="pg_content" style="background-color:#f7f7f7;"></div>
+              </div>
+            </div>
+
 
         </div>
     </div>
 
   </div>
-
 </html>
+
+<script type="text/javascript">
+function nTabs(thisObj, Num) {
+    var tabObj = thisObj.parentNode.id;
+    var tabList = document.getElementById(tabObj).getElementsByTagName("a");
+    for (var index = 0; index < tabList.length; index++) {
+        if (index == Num) {
+            thisObj.className = "active";
+            document.getElementById(tabObj + "_Content" + index).style.display = "block";
+        } else {
+            tabList[index].className = "normal";
+            document.getElementById(tabObj + "_Content" + index).style.display = "none";
+        }
+    }
+}
+window.onload = function() {
+    var obox = document.getElementById("myTab0");
+    var lis = obox.getElementsByTagName("a");
+    for (var index = 0; index < lis.length; index++) {
+        lis[index].index = index;
+        lis[index].onclick = function() {
+            nTabs(this, this.index);
+            //插入修改class
+            this.setAttribute("class", "current");
+        }
+    }
+}
+</script>
+
+<script type="text/javascript">
+var myChart = echarts.init(document.getElementById('pg_content_24h'));
+var option = {
+    color: ['#79b05f', '#e58c65'],
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data: ['美国标准', '中国标准']
+    },
+    xAxis: [{
+        type: 'category',
+        boundaryGap: false,
+        data: ["06\u65e509\u65f6", "06\u65e510\u65f6", "06\u65e511\u65f6", "06\u65e512\u65f6", "06\u65e513\u65f6", "06\u65e514\u65f6", "06\u65e515\u65f6", "06\u65e516\u65f6", "06\u65e517\u65f6", "06\u65e518\u65f6", "06\u65e519\u65f6", "06\u65e520\u65f6", "06\u65e521\u65f6", "06\u65e523\u65f6", "07\u65e500\u65f6", "07\u65e501\u65f6", "07\u65e502\u65f6", "07\u65e503\u65f6", "07\u65e504\u65f6", "07\u65e505\u65f6", "07\u65e506\u65f6", "07\u65e507\u65f6", "07\u65e508\u65f6", "07\u65e509\u65f6"],
+        axisLine: {
+            lineStyle: {
+                color: '#d4d4d4'
+            }
+        }
+    }],
+    yAxis: [{
+        type: 'value',
+        axisLabel: {
+            formatter: '{value} '
+        },
+        axisLine: {
+            lineStyle: {
+                color: '#d4d4d4'
+            }
+        }
+    }],
+
+    //曲线数据
+    series: [{
+        name: '美国标准',
+        type: 'line',
+        data: [115, 115, 118, 116, 114, 115, 114, 116, 120, 120, 119, 117, 102, 91, 92, 95, 98, 101, 102, 102, 104, 105, 110, 111]
+    }, {
+        name: '中国标准',
+        type: 'line',
+        data: [67, 69, 70, 71, 69, 71, 69, 72, 74, 75, 74, 77, 71, 59, 57, 59, 59, 62, 62, 63, 63, 65, 67, 70]
+    }]
+};
+// 为echarts对象加载数据 
+// 使用myChart
+myChart.setOption(option);
+
+// 30d表格
+// 基于准备好的dom，初始化echarts图表
+//var myChart = ec.init(document.getElementById('pg_content_30d'));
+var myChart = echarts.init(document.getElementById('pg_content_30d'));
+var option = {
+    color: ['#79b05f', '#e58c65'],
+    tooltip: {
+        trigger: 'axis'
+    },
+    legend: {
+        data: ['美国标准', '中国标准']
+    },
+    xAxis: [{
+        type: 'category',
+        boundaryGap: false,
+        data: ["08\u65e5", "09\u65e5", "10\u65e5", "11\u65e5", "12\u65e5", "13\u65e5", "14\u65e5", "15\u65e5", "16\u65e5", "17\u65e5", "18\u65e5", "19\u65e5", "20\u65e5", "21\u65e5", "22\u65e5", "23\u65e5", "24\u65e5", "25\u65e5", "26\u65e5", "27\u65e5", "28\u65e5", "29\u65e5", "30\u65e5", "31\u65e5", "01\u65e5", "02\u65e5", "03\u65e5", "04\u65e5", "05\u65e5", "06\u65e5"],
+        axisLine: {
+            lineStyle: {
+                color: '#d4d4d4'
+            }
+        }
+    }],
+    yAxis: [{
+        type: 'value',
+        axisLabel: {
+            formatter: '{value} '
+        },
+        axisLine: {
+            lineStyle: {
+                color: '#d4d4d4'
+            }
+        }
+    }],
+    series: [{
+        name: '美国标准',
+        type: 'line',
+        data: [87, 106, 104, 86, 129, 128, 52, 90, 118, 111, 117, 89, 108, 94, 86, 96, 85, 40, 57, 96, 113, 109, 100, 47, 61, 92, 124, 90, 85, 106]
+    }, {
+        name: '中国标准',
+        type: 'line',
+        data: [49, 61, 65, 48, 83, 83, 32, 53, 70, 69, 79, 52, 65, 63, 52, 58, 57, 25, 48, 69, 77, 70, 66, 31, 42, 57, 76, 57, 56, 66]
+    }]
+};
+// 为echarts对象加载数据 
+myChart.setOption(option);
+
+</script>
+
+
