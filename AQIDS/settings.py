@@ -46,10 +46,10 @@ INSTALLED_APPS = [
 CRONJOBS = [
     ('* * * * 1', 'catchdata.cron.get_and_store_gzepb_station', '>> /var/log/aqids.log'),
     ('* * * * 1', 'catchdata.cron.get_and_store_aqicn_station', '>> /var/log/aqids.log'),
-    ('*/30 * * * *', 'catchdata.cron.get_and_store_aqicn_aqi', '>> /var/log/aqids.log'),
-    ('*/30 * * * *', 'catchdata.cron.get_and_store_gzepb_aqi', '>> /var/log/aqids.log'),
+    ('*/40 * * * *', 'catchdata.cron.get_and_store_aqicn_aqi', '>> /var/log/aqids.log'),
+    ('*/40 * * * *', 'catchdata.cron.get_and_store_gzepb_aqi', '>> /var/log/aqids.log'),
 ]
-CRONTAB_LOCK_JOBS = True
+CRONTAB_LOCK_JOBS = False
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
