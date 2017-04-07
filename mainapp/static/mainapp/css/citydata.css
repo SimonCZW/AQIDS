@@ -1838,3 +1838,7 @@ ul.message_hotcity_list li a b {
     color: #1e9e69;
     font-size: 12px;
 }
+
+.none {
+    display: none;
+}
