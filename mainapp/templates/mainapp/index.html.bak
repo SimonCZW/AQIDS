@@ -1,62 +1,67 @@
-<h1>Hello AQIDS</h1>
+<!DOCTYPE html>
 
+<head>
+    <meta charset="utf-8">
+    <title>ECharts</title>
+    {% load static %}
+    <script src="{% static 'mainapp/js/echarts.js' %}"></script> 
 
-<!--主体内容-->
-<div>
-  <div>
-    <div>
-      <p>广州 各监测点实时数据</p>
-      <div>
-        <!-- 详细数据开始-->
-        <div>
-          <div>
-            <span>检测站点</span>
-            <span>空气质量状况</span>
-            <span>首要污染物</span>
-            <span>PM2.5浓度</span>
-            <span>PM10浓度</span>
-          </div>
-          <ul>
-          {% for station_data in lastest_gzepb_data %}
-            <li>
-              <a herf="#" title="查询详细数据">{{ station_data.station_name.display_name }}</a>
-              <span>{{ station_data.quality.color }}</span>
-              {% if station_data.quality.color == "黄色" %}
-                <p>{{ station_data.quality.color }}ppp</p>
-              {% else %}
-                <p>{{ station_data.quality.color }}</p>
-                <p>xxxx<p/>
-              {% endif %}
+</head>
 
-              <!--
-              <span>{{ station_data.pm25_1h }}</span>
-              {% if "{{ station_data.pm25_1h }}" >= 12 %}
-                <p>{{ station_data.quality.aqi_range }}</p>
-              {% else %}
-                <p>{{ station_data.quality.aqi_range }}</p>
-                <p>y<p/>
-              {% endif %}
-              {% ifequal "{{ station_data.quality.aqi_range }}" "51-101" %}
-                <p>{{ station_data.quality.aqi_range }}</p>
-              {% endifequal %}
-              -->
-              <!--
-              <span>{{ station_data.dominentpol }}</span>
-              <span>{{ station_data.pm25_1h }}</span>
-              <span>{{ station_data.pm10_1h }}</span>
-              -->
-              </li>
-          {% endfor %}
-          </ul>
+<body>
+    
+    <!-- 为ECharts准备一个具备大小（宽高）的Dom -->
+    <div id="main" style="height:400px"></div>
+    <!-- ECharts单文件引入 -->
+    <script type="text/javascript">
+    {% load js %}
+    var myChart = echarts.init(document.getElementById('main'));
+    var option = {{ option|js }};
+    <!--var option = {-->
+        <!--color: ['#79b05f', '#e58c65'],-->
+        <!--tooltip: {-->
+            <!--trigger: 'axis'-->
+        <!--},-->
+        <!--legend: {-->
+            <!--data: ['美国标准', '中国标准']-->
+        <!--},-->
+        <!--xAxis: [{-->
+            <!--type: 'category',-->
+            <!--boundaryGap: false,-->
+            <!--data: ["06\u65e509\u65f6", "06\u65e510\u65f6", "06\u65e511\u65f6", "06\u65e512\u65f6", "06\u65e513\u65f6", "06\u65e514\u65f6", "06\u65e515\u65f6", "06\u65e516\u65f6", "06\u65e517\u65f6", "06\u65e518\u65f6", "06\u65e519\u65f6", "06\u65e520\u65f6", "06\u65e521\u65f6", "06\u65e523\u65f6", "07\u65e500\u65f6", "07\u65e501\u65f6", "07\u65e502\u65f6", "07\u65e503\u65f6", "07\u65e504\u65f6", "07\u65e505\u65f6", "07\u65e506\u65f6", "07\u65e507\u65f6", "07\u65e508\u65f6", "07\u65e509\u65f6"],-->
+            <!--axisLine: {-->
+                <!--lineStyle: {-->
+                    <!--color: '#d4d4d4'-->
+                <!--}-->
+            <!--}-->
+        <!--}],-->
+        <!--yAxis: [{-->
+            <!--type: 'value',-->
+            <!--axisLabel: {-->
+                <!--formatter: '{value} '-->
+            <!--},-->
+            <!--axisLine: {-->
+                <!--lineStyle: {-->
+                    <!--color: '#d4d4d4'-->
+                <!--}-->
+            <!--}-->
+        <!--}],-->
 
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
+        <!--//曲线数据-->
+        <!--series: [{-->
+            <!--name: '美国标准',-->
+            <!--type: 'line',-->
+            <!--data: [115, 115, 118, 116, 114, 115, 114, 116, 120, 120, 119, 117, 102, 91, 92, 95, 98, 101, 102, 102, 104, 105, 110, 111]-->
+        <!--}, {-->
+            <!--name: '中国标准',-->
+            <!--type: 'line',-->
+            <!--data: [67, 69, 70, 71, 69, 71, 69, 72, 74, 75, 74, 77, 71, 59, 57, 59, 59, 62, 62, 63, 63, 65, 67, 70]-->
+        <!--}]-->
+    <!--};-->
 
+    // 为echarts对象加载数据 
+    myChart.setOption(option);
 
-{% for x in lastest_aqicn_data %}
-<p>{{ x.station_name }} {{ x.aqi }} </p>
-{% endfor %}
+    </script>
+</body>
 
