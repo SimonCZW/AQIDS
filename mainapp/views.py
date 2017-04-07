@@ -104,6 +104,48 @@ class TestIndexView(TemplateView):
             context['lastest_aqicn_data'] = AqicnIAqiData.objects.filter(
                 time_point=hour_ago)
 
+        context['option'] = {
+            'color': ['#79b05f', '#e58c65'],
+            'tooltip': {'trigger': 'axis'},
+            'legend': {'data': ['美国标准', '中国标准']},
+            'xAxis': [{
+                'type': 'category',
+                'boundaryGap': 'false',
+                'data': ["06号09时", "06月10时", "06月11时",
+                       "06月12时", "06月13时", "06月14时",
+                       "06月15时", "06月16时", "06月17时",
+                       "06月18时", "06月19时", "06月20时",
+                       "06月21时", "06月23时", "07月00时",
+                       "07月01时", "07月02时", "07月03时",
+                       "07月04时", "07月05时", "07月06时",
+                       "07月07时", "07月08时", "07月09时"],
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                }
+            }],
+            'yAxis': [{
+                'type': 'value',
+                'axisLabel': {
+                    'formatter': '{value} '
+                },
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                }
+            }],
+            'series': [{
+                'name': '美国标准',
+                'type': 'line',
+                'data': [115, 115, 118, 116, 114, 115, 114, 116, 120, 120, 119, 117, 102, 91, 92, 95, 98, 101, 102, 102, 104, 105, 110, 111]
+            }, {
+                'name': '中国标准',
+                'type': 'line',
+                'data': [67, 69, 70, 71, 69, 71, 69, 72, 74, 75, 74, 77, 71, 59, 57, 59, 59, 62, 62, 63, 63, 65, 67, 70]
+            }]
+            }
         return context
 
 class StationView(TemplateView):
