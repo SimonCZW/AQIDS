@@ -29,6 +29,85 @@ class IndexView(TemplateView):
         else:
             return None
 
+    def get_last_24h_data(self, model, display_station, time_point):
+        time_list_24h = []
+        time_list_24h.append(time_point)
+        time_point = datetime.datetime.strptime(time_point, "%Y-%m-%d %H:%M:%S")
+        for hour in range(1,24):
+            time_list_24h.append((
+                time_point-datetime.timedelta(hours=hour)).strftime(
+                    "%Y-%m-%d %H:%M:%S"))
+        time_list_24h = time_list_24h[::-1]
+
+        data_24h = []
+        for time_point in time_list_24h:
+            if model.objects.filter(
+                    time_point=time_point,
+                    station_name__display_name=display_station).exists():
+                data_24h.append(model.objects.get(
+                    time_point=time_point,
+                    station_name__display_name=display_station))
+            else:
+                data_24h.append(None)
+
+        return (time_list_24h, data_24h)
+
+    def get_line_option(self, model, display_station, time_point):
+
+        option = {
+            'color': ['#79b05f'],
+            'tooltip': {'trigger': 'axis'},
+            'legend': {'data': [display_station]},
+            'xAxis': [{
+                'type': 'category',
+                'boundaryGap': 'false',
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                },
+                'data': []
+            }],
+            'yAxis': [{
+                'type': 'value',
+                'axisLabel': {
+                    'formatter': '{value}'
+                },
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                }
+            }],
+            'series': [{
+                'name': display_station,
+                'type': 'line',
+                'data': []
+            }],
+        }
+
+        (time_list, queryset_list) = self.get_last_24h_data(
+            model=model,
+            display_station=display_station,
+            time_point=time_point)
+
+        for time in time_list:
+            option['xAxis'][0]['data'].append(
+                datetime.datetime.strptime(time,
+                    '%Y-%m-%d %H:00:00').strftime('%d号%H时').decode('utf-8'))
+
+        last_aqi=0
+        for data in queryset_list:
+            if data is None:
+                # option['series'][0]['data'].append(None)
+                # Using hour ago data if no data.
+                option['series'][0]['data'].append(last_aqi)
+            else:
+                option['series'][0]['data'].append(data.aqi)
+                last_aqi=data.aqi
+
+        return option
+
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
 
@@ -78,17 +157,42 @@ class IndexView(TemplateView):
             context['aqicn_city_average'] = AqicnIAqiData.objects.get(
                 time_point=hour_ago, station_name__display_name="广州均值")
 
+        context['aqicn_option'] = self.get_line_option(
+            model=AqicnIAqiData,
+            display_station="广州均值",
+            time_point=hour_now)
         return context
 
 class TestIndexView(TemplateView):
     template_name = "mainapp/index.html.bak"
 
+    def get_last_24h_data(self, model, display_station, time):
+        time_list_24h = []
+        time_list_24h.append(time)
+        time = datetime.datetime.strptime(time, "%Y-%m-%d %H:%M:%S")
+        for hour in range(1,24):
+            time_list_24h.append((time-datetime.timedelta(hours=hour)).strftime(
+                "%Y-%m-%d %H:%M:%S"))
+        time_list_24h = time_list_24h[::-1]
+
+        data_24h = []
+        for time_point in time_list_24h:
+            if model.objects.filter(
+                    time_point=time_point,
+                    station_name__display_name=display_station).exists():
+                data_24h.append(model.objects.get(
+                    time_point=time_point,
+                    station_name__display_name=display_station))
+            else:
+                data_24h.append(None)
+
+        return (time_list_24h, data_24h)
+
     def get_context_data(self, **kwargs):
         context = super(TestIndexView, self).get_context_data(**kwargs)
 
+        hour_now = datetime.datetime.now().strftime("%Y-%m-%d %H:00:00")
         hour_ago = (datetime.datetime.now()
-                    - datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:00:00")
-        hour_now = (datetime.datetime.now()
                     - datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:00:00")
         if GzepbAqiData.objects.filter(time_point=hour_now).exists():
             context['lastest_gzepb_data'] = GzepbAqiData.objects.filter(
@@ -103,6 +207,58 @@ class TestIndexView(TemplateView):
         elif AqicnIAqiData.objects.filter(time_point=hour_ago).exists():
             context['lastest_aqicn_data'] = AqicnIAqiData.objects.filter(
                 time_point=hour_ago)
+
+        (time_list, queryset_list) = self.get_last_24h_data(
+            model=AqicnIAqiData,
+            display_station="广州均值",
+            time=hour_now)
+
+        context['aqicn_option'] = {
+            'color': ['#79b05f'],
+            'tooltip': {'trigger': 'axis'},
+            'legend': {'data': ['美国领事馆数据']},
+            'xAxis': [{
+                'type': 'category',
+                'boundaryGap': 'false',
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                },
+                'data': []
+            }],
+            'yAxis': [{
+                'type': 'value',
+                'axisLabel': {
+                    'formatter': '{value}'
+                },
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                }
+            }],
+            'series': [{
+                'name': '美国领事馆数据',
+                'type': 'line',
+                'data': []
+            }],
+        }
+        for time in time_list:
+            context['aqicn_option']['xAxis'][0]['data'].append(
+                datetime.datetime.strptime(time,
+                    '%Y-%m-%d %H:00:00').strftime('%d号%H时').decode('utf-8'))
+
+        last_aqi=0
+        for data in queryset_list:
+            if data is None:
+                # context['aqicn_option']['series'][0]['data'].append(None)
+                # Using hour ago data if no data.
+                context['aqicn_option']['series'][0]['data'].append(last_aqi)
+            else:
+                context['aqicn_option']['series'][0]['data'].append(data.aqi)
+                last_aqi=data.aqi
+
 
         context['option'] = {
             'color': ['#79b05f', '#e58c65'],
@@ -139,7 +295,7 @@ class TestIndexView(TemplateView):
             'series': [{
                 'name': '美国标准',
                 'type': 'line',
-                'data': [115, 115, 118, 116, 114, 115, 114, 116, 120, 120, 119, 117, 102, 91, 92, 95, 98, 101, 102, 102, 104, 105, 110, 111]
+                'data': [115, None, 118, 116, 114, 115, 114, 116, 120, 120, 119, 117, 102, 91, 92, 95, 98, 101, 102, 102, 104, 105, 110, 111]
             }, {
                 'name': '中国标准',
                 'type': 'line',
