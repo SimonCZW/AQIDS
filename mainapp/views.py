@@ -8,31 +8,11 @@ from mainapp.models import GzepbAqiData, AqicnIAqiData
 class IndexView(TemplateView):
     template_name = "mainapp/index.html"
 
-    def sw_gzepb_dominent(self, dominentpol):
-        """
-        switching gzepb dominentpol
-        """
-        import re
-        if re.match(u'^二氧化氮.*', dominentpol):
-            return 'NO2'
-        elif re.match(u'^颗粒物\(PM10\).*', dominentpol):
-            return 'PM10'
-        elif re.match(u'^臭氧1小时.*', dominentpol):
-            return 'O3'
-        elif re.match(u'^二氧化硫.*', dominentpol):
-            return 'SO2'
-        elif re.match(u'^一氧化碳.*', dominentpol):
-            return 'CO'
-        elif re.match(u'^颗粒物\(PM2.5\).*', dominentpol):
-            return 'PM2.5'
-        else:
-            return None
-
     def get_last_24h_data(self, model, display_station, time_point):
         time_list_24h = []
         time_list_24h.append(time_point)
         time_point = datetime.datetime.strptime(time_point, "%Y-%m-%d %H:%M:%S")
-        for hour in range(1,24):
+        for hour in range(1, 24):
             time_list_24h.append((
                 time_point-datetime.timedelta(hours=hour)).strftime(
                     "%Y-%m-%d %H:%M:%S"))
@@ -107,16 +87,69 @@ class IndexView(TemplateView):
 
         return option
 
-    def get_model_lastest_data(self, model, time_point):
-        if model.objects.filter(time_point=time_point).exists():
-            lastest_data = model.objects.filter(time_point=time_point)
-            lastest_time_point = time_point
+
+    def sw_gzepb_dominent(self, dominentpol):
+        """
+        switching gzepb dominentpol
+        """
+        import re
+        if re.match(u'^二氧化氮.*', dominentpol):
+            return 'NO2'
+        elif re.match(u'^颗粒物\(PM10\).*', dominentpol):
+            return 'PM10'
+        elif re.match(u'^臭氧1小时.*', dominentpol):
+            return 'O3'
+        elif re.match(u'^二氧化硫.*', dominentpol):
+            return 'SO2'
+        elif re.match(u'^一氧化碳.*', dominentpol):
+            return 'CO'
+        elif re.match(u'^颗粒物\(PM2.5\).*', dominentpol):
+            return 'PM2.5'
         else:
-            lastest_data = None
+            return None
+
+    def _yield_time_point(self, time_point):
+        """a generator for time_point.(range:3 day) """
+        time_point = datetime.datetime.strptime(time_point, "%Y-%m-%d %H:00:00")
+        for hour in range(0, 72):
+            last_time_point = (time_point - datetime.timedelta(
+                hours=hour)).strftime("%Y-%m-%d %H:00:00")
+            yield last_time_point
+
+    def get_model_lastest_data(self, model, time_point):
+        """iter to get the lastest model data until success.(range:3 day)"""
+        lastest_data = None
+        for lastest_time_point in self._yield_time_point(time_point=time_point):
+            if model.objects.filter(time_point=lastest_time_point).exists():
+                lastest_data = model.objects.filter(
+                    time_point=lastest_time_point)
+                break
+        if lastest_data is None:
             lastest_time_point = None
         return (lastest_data, lastest_time_point)
 
+    def get_model_lastest_station_data(self, model, display_station, time_point):
+        """iter to get the lastest station data until success.(range:3 day)"""
+        lastest_average_data = None
+        for lastest_time_point in self._yield_time_point(time_point=time_point):
+            if model.objects.filter(
+                    station_name__display_name=display_station,
+                    time_point=lastest_time_point).exists():
+                lastest_average_data = model.objects.get(
+                    time_point = lastest_time_point,
+                    station_name__display_name=display_station)
+                break
+
+        #special for gzepb dominentpol transfer
+        if display_station == "全市平均" and lastest_average_data is not None:
+            lastest_average_data.values()[0][
+                'dominentpol'] = self.sw_gzepb_dominent(
+                    lastest_average_data.values()[0])
+
+        return lastest_average_data
+
     def get_model_lastest_total(self, model, time_point):
+        """old version get average data."""
         if model.objects.filter(station_name__display_name="全市平均",
                                 time_point=time_point).exists():
             average_data = models.objects.get(
@@ -125,23 +158,23 @@ class IndexView(TemplateView):
             if average_data.values()[0]['station_name_id'].encode(
                     'utf-8') == "全市平均":
                 average_data.values()[0]['dominentpol']=self.sw_gzepb_dominent(
-                    average_data.dominentpol)
+                    average_data.values()[0]['dominentpol'])
                 return average_data
 
         elif model.objects.filter(station_name__display_name="广州均值",
                                   time_point=time_point).exists():
             average_data = model.objects.get(
                 time_point=time_point, station_name__display_name="广州均值")
-            # average_data = model.objects.filter(
-                # Q(station_name__display_name="全市平均")|Q(
-                    # station_name__display_name="广州均值")).filter(
-                        # time_point=time_point)
         else:
             average_data = None
         return average_data
 
 
     def get_context_data(self, **kwargs):
+        """
+        for all data use in index.html.
+        Usage : {{ var }}
+        """
         context = super(IndexView, self).get_context_data(**kwargs)
 
         hour_now = datetime.datetime.now().strftime("%Y-%m-%d %H:00:00")
@@ -151,15 +184,23 @@ class IndexView(TemplateView):
         (context['lastest_gzepb_data'],
          context['gzepb_time_point'])= self.get_model_lastest_data(
              model=GzepbAqiData, time_point=hour_now)
-        context['gzepb_city_average'] = self.get_model_lastest_total(
-            model=GzepbAqiData, time_point=hour_now)
+        context['gzepb_city_average'] = self.get_model_lastest_station_data(
+            model=GzepbAqiData,
+            display_station="全市平均",
+            time_point=hour_now)
+        # context['gzepb_city_average'] = self.get_model_lastest_total(
+            # model=GzepbAqiData, time_point=hour_now)
 
         (context['lastest_aqicn_data'],
          context['aqicn_time_point'])= self.get_model_lastest_data(
              model=AqicnIAqiData, time_point=hour_now)
 
-        context['aqicn_city_average'] = self.get_model_lastest_total(
-            model=AqicnIAqiData, time_point=hour_now)
+        context['aqicn_city_average'] = self.get_model_lastest_station_data(
+            model=AqicnIAqiData,
+            display_station="广州均值",
+            time_point=hour_now)
+        # context['aqicn_city_average'] = self.get_model_lastest_total(
+            # model=AqicnIAqiData, time_point=hour_now)
 
         context['aqicn_option'] = self.get_line_option(
             model=AqicnIAqiData,
