@@ -251,6 +251,7 @@
 
                     <!--详细数据开始-->
                     <div class="pj_area_data ui-switchable-content">
+                      {% if lastest_aqicn_data %}
                         <div class="pj_area_data_title">
                             <span class="pjadt_location">美领馆监测站点</span>
                             <!--AQI指数有上下箭头，可以选择排序,a标签分别增加“aqi_arrow_top”和“aqi_arrow_down”,默认是没有这个类名的-->
@@ -267,6 +268,7 @@
                             <span class="pjadt_pm10">PM10 IAQI</span>
                             <div class="clear"></div>
                         </div>
+                      {% endif %}
                         <ul class="pj_area_data_details ui-switchable-panel">
                             <!--鼠标划上去后，要有个li的背景变绿色效果，增加li的"pj_area_data_item_active"就行-->
                             {% for station_data in lastest_aqicn_data %}
@@ -304,6 +306,7 @@
                     </div>
                     <!-- gzepb  -->
                     <div class="pj_area_data ui-switchable-content">
+                      {% if lastest_aqicn_data %}
                         <div class="pj_area_data_title">
                             <span class="pjadt_location">Gzepb监测站点</span>
                             <!--AQI指数有上下箭头，可以选择排序,a标签分别增加“aqi_arrow_top”和“aqi_arrow_down”,默认是没有这个类名的-->
@@ -320,6 +323,7 @@
                             <span class="pjadt_pm10">PM10 IAQI</span>
                             <div class="clear"></div>
                         </div>
+                      {% endif %}
                         <ul class="pj_area_data_details ui-switchable-panel">
                             {% for station_data in lastest_gzepb_data %}
                               <li class="pj_area_data_item pj_area_data_item_darkbg">
