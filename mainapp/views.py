@@ -1,9 +1,8 @@
 # -*- coding:utf-8 -*-
-#from django.shortcuts import render
+import datetime
+
 from django.views.generic import TemplateView
 from mainapp.models import GzepbAqiData, AqicnIAqiData
-
-import datetime
 
 
 class IndexView(TemplateView):
@@ -108,54 +107,59 @@ class IndexView(TemplateView):
 
         return option
 
+    def get_model_lastest_data(self, model, time_point):
+        if model.objects.filter(time_point=time_point).exists():
+            lastest_data = model.objects.filter(time_point=time_point)
+            lastest_time_point = time_point
+        else:
+            lastest_data = None
+            lastest_time_point = None
+        return (lastest_data, lastest_time_point)
+
+    def get_model_lastest_total(self, model, time_point):
+        if model.objects.filter(station_name__display_name="全市平均",
+                                time_point=time_point).exists():
+            average_data = models.objects.get(
+                time_point=time_point, station_name__display_name="全市平均")
+
+            if average_data.values()[0]['station_name_id'].encode(
+                    'utf-8') == "全市平均":
+                average_data.values()[0]['dominentpol']=self.sw_gzepb_dominent(
+                    average_data.dominentpol)
+                return average_data
+
+        elif model.objects.filter(station_name__display_name="广州均值",
+                                  time_point=time_point).exists():
+            average_data = model.objects.get(
+                time_point=time_point, station_name__display_name="广州均值")
+            # average_data = model.objects.filter(
+                # Q(station_name__display_name="全市平均")|Q(
+                    # station_name__display_name="广州均值")).filter(
+                        # time_point=time_point)
+        else:
+            average_data = None
+        return average_data
+
+
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
 
         hour_now = datetime.datetime.now().strftime("%Y-%m-%d %H:00:00")
         hour_ago = (datetime.datetime.now()
                     - datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:00:00")
-        if GzepbAqiData.objects.filter(time_point=hour_now).exists():
-            context['lastest_gzepb_data'] = GzepbAqiData.objects.filter(
-                time_point=hour_now)#.exclude(
-                    # station_name__display_name="全市平均")
-            context['gzepb_time_point'] = hour_now
-            if GzepbAqiData.objects.filter(
-                    time_point=hour_now,
-                    station_name__display_name="全市平均").exists():
-                context['gzepb_city_average'] = GzepbAqiData.objects.get(
-                    time_point=hour_now, station_name__display_name="全市平均")
-                # switch dominentpol
-                context['gzepb_city_average'].dominentpol = self.sw_gzepb_dominent(
-                    context['gzepb_city_average'].dominentpol)
 
-        elif GzepbAqiData.objects.filter(time_point=hour_ago).exists():
-            context['lastest_gzepb_data'] = GzepbAqiData.objects.filter(
-                time_point=hour_ago)#.exclude(
-                    # station_name__display_name="全市平均")
-            context['gzepb_time_point'] = hour_ago
-            if GzepbAqiData.objects.filter(
-                    time_point=hour_ago,
-                    station_name__display_name="全市平均").exists():
-                context['gzepb_city_average'] = GzepbAqiData.objects.get(
-                    time_point=hour_ago, station_name__display_name="全市平均")
-                # switch dominentpol
-                context['gzepb_city_average'].dominentpol = self.sw_gzepb_dominent(
-                    context['gzepb_city_average'].dominentpol)
+        (context['lastest_gzepb_data'],
+         context['gzepb_time_point'])= self.get_model_lastest_data(
+             model=GzepbAqiData, time_point=hour_now)
+        context['gzepb_city_average'] = self.get_model_lastest_total(
+            model=GzepbAqiData, time_point=hour_now)
 
-        if AqicnIAqiData.objects.filter(time_point=hour_now).exists():
-            context['lastest_aqicn_data'] = AqicnIAqiData.objects.filter(
-                time_point=hour_now)#.exclude(
-                    # station_name__display_name="广州均值")
-            context['aqicn_time_point'] = hour_now
-            context['aqicn_city_average'] = AqicnIAqiData.objects.get(
-                time_point=hour_now, station_name__display_name="广州均值")
-        elif AqicnIAqiData.objects.filter(time_point=hour_ago).exists():
-            context['lastest_aqicn_data'] = AqicnIAqiData.objects.filter(
-                time_point=hour_ago)#.exclude(
-                    # station_name__display_name="广州均值")
-            context['aqicn_time_point'] = hour_ago
-            context['aqicn_city_average'] = AqicnIAqiData.objects.get(
-                time_point=hour_ago, station_name__display_name="广州均值")
+        (context['lastest_aqicn_data'],
+         context['aqicn_time_point'])= self.get_model_lastest_data(
+             model=AqicnIAqiData, time_point=hour_now)
+
+        context['aqicn_city_average'] = self.get_model_lastest_total(
+            model=AqicnIAqiData, time_point=hour_now)
 
         context['aqicn_option'] = self.get_line_option(
             model=AqicnIAqiData,
