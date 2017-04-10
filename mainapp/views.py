@@ -142,9 +142,11 @@ class IndexView(TemplateView):
 
         #special for gzepb dominentpol transfer
         if display_station == "全市平均" and lastest_average_data is not None:
-            lastest_average_data.values()[0][
-                'dominentpol'] = self.sw_gzepb_dominent(
-                    lastest_average_data.values()[0])
+            lastest_average_data.dominentpol = self.sw_gzepb_dominent(
+                lastest_average_data.dominentpol)
+            # lastest_average_data.values()[0][
+                # 'dominentpol'] = self.sw_gzepb_dominent(
+                    # lastest_average_data.values()[0])
 
         return lastest_average_data
 
@@ -178,8 +180,6 @@ class IndexView(TemplateView):
         context = super(IndexView, self).get_context_data(**kwargs)
 
         hour_now = datetime.datetime.now().strftime("%Y-%m-%d %H:00:00")
-        hour_ago = (datetime.datetime.now()
-                    - datetime.timedelta(hours=1)).strftime("%Y-%m-%d %H:00:00")
 
         (context['lastest_gzepb_data'],
          context['gzepb_time_point'])= self.get_model_lastest_data(
@@ -352,15 +352,172 @@ class TestIndexView(TemplateView):
 class StationView(TemplateView):
     template_name = "mainapp/station.html"
 
+    def get_time_list_24h(self, time_point):
+        time_list_24h = []
+        time_point = datetime.datetime.strptime(time_point, "%Y-%m-%d %H:%M:%S")
+        for hour in range(0, 24):
+            time_list_24h.append((
+                time_point-datetime.timedelta(hours=hour)).strftime(
+                    "%Y-%m-%d %H:%M:%S"))
+        time_list_24h = time_list_24h[::-1]
+        return time_list_24h
+
+    def get_last_24h_data(self, model, display_station, time_list):
+        data_24h = []
+        for time_point in time_list:
+            if model.objects.filter(
+                    time_point=time_point,
+                    station_name__display_name=display_station).exists():
+                data_24h.append(model.objects.get(
+                    time_point=time_point,
+                    station_name__display_name=display_station))
+            else:
+                data_24h.append(None)
+
+        return data_24h
+
+    def get_line_option(self, models, display_station, time_point):
+
+        option = {
+            'color': [],
+            'tooltip': {'trigger': 'axis'},
+            'legend': {'data': []},
+            'xAxis': [{
+                'type': 'category',
+                'boundaryGap': 'false',
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                },
+                'data': []
+            }],
+            'yAxis': [{
+                'type': 'value',
+                'axisLabel': {
+                    'formatter': '{value}'
+                },
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                }
+            }],
+            'series': [],
+        }
+        time_list = self.get_time_list_24h(time_point)
+        for time in time_list:
+            option['xAxis'][0]['data'].append(
+                datetime.datetime.strptime(time,
+                    '%Y-%m-%d %H:00:00').strftime('%d号%H时').decode('utf-8'))
+
+        queryset_dict={}
+        if isinstance(models, (list, tuple)):
+            for model in models:
+                #pass the model station not exists in it.
+                if not model.objects.filter(
+                        station_name__display_name=display_station).exists():
+                    continue
+                queryset_dict[model.__name__] = self.get_last_24h_data(
+                    model=model,
+                    time_list=time_list,
+                    display_station=display_station)
+        else:
+            raise ValueError("models must be a list or a tuple.")
+
+        # for different color line
+        color_list = ['#79b05f', '#e58c65', 'blue']
+        option['color']+=color_list[:len(queryset_dict)]
+
+        for line_name, datas in queryset_dict.iteritems():
+            option['legend']['data'].append(line_name)
+            series_data = {'name': line_name, 'type': 'line', 'data': []}
+
+            last_aqi=0
+            for data in datas:
+                if data is None:
+                    # series_data['data'].append(None)
+                    # UserWarning hour ago data if no data.
+                    series_data['data'].append(last_aqi)
+                else:
+                    series_data['data'].append(data.aqi)
+                    last_aqi=data.aqi
+
+            option['series'].append(series_data)
+        return option
+
+    def sw_gzepb_dominent(self, dominentpol):
+        """
+        switching gzepb dominentpol
+        """
+        import re
+        if re.match(u'^二氧化氮.*', dominentpol):
+            return 'NO2'
+        elif re.match(u'^颗粒物\(PM10\).*', dominentpol):
+            return 'PM10'
+        elif re.match(u'^臭氧1小时.*', dominentpol):
+            return 'O3'
+        elif re.match(u'^二氧化硫.*', dominentpol):
+            return 'SO2'
+        elif re.match(u'^一氧化碳.*', dominentpol):
+            return 'CO'
+        elif re.match(u'^颗粒物\(PM2.5\).*', dominentpol):
+            return 'PM2.5'
+        else:
+            return dominentpol
+
+    def _yield_time_point(self, time_point):
+        """a generator for time_point.(range:3 day) """
+        time_point = datetime.datetime.strptime(time_point, "%Y-%m-%d %H:00:00")
+        for hour in range(0, 72):
+            last_time_point = (time_point - datetime.timedelta(
+                hours=hour)).strftime("%Y-%m-%d %H:00:00")
+            yield last_time_point
+
+    def get_model_lastest_station_data(self, model, display_station, time_point):
+        """iter to get the lastest station data until success.(range:3 day)"""
+        lastest_station_data = None
+        for lastest_time_point in self._yield_time_point(time_point=time_point):
+            if model.objects.filter(
+                    station_name__display_name=display_station,
+                    time_point=lastest_time_point).exists():
+                lastest_station_data = model.objects.get(
+                    time_point = lastest_time_point,
+                    station_name__display_name=display_station)
+                break
+
+        #special for gzepb dominentpol transfer
+        if lastest_station_data is not None:
+            lastest_station_data.dominentpol = self.sw_gzepb_dominent(
+                lastest_station_data.dominentpol)
+
+        return lastest_station_data
+
+
     def get_context_data(self, **kwargs):
         context = super(StationView, self).get_context_data(**kwargs)
+        hour_now = datetime.datetime.now().strftime("%Y-%m-%d %H:00:00")
 
-        aqicn_station_data = AqicnIAqiData.objects.filter(
-            station_name__display_name = self.kwargs['display_name'])
-        gzepb_station_data = GzepbAqiData.objects.filter(
-            station_name__display_name = self.kwargs['display_name'])
-        if aqicn_station_data.exists():
-            context['aqicn_station_data'] = aqicn_station_data
-        if gzepb_station_data.exists():
-            context['gzepb_station_data'] = gzepb_station_data
+        context['aqicn_lastest_data'] = self.get_model_lastest_station_data(
+            model=AqicnIAqiData,
+            time_point=hour_now,
+            display_station=self.kwargs['display_name'])
+        context['gzepb_lastest_data'] = self.get_model_lastest_station_data(
+            model=GzepbAqiData,
+            time_point=hour_now,
+            display_station=self.kwargs['display_name'])
+
+        # context['aqicn_option'] = self.get_line_option(
+            # model=AqicnIAqiData,
+            # time_point=hour_now,
+            # display_station=self.kwargs['display_name'])
+        # context['gzepb_option'] = self.get_line_option(
+            # model=GzepbAqiData,
+            # time_point=hour_now,
+            # display_station=self.kwargs['display_name'])
+        context['station_option_24h'] = self.get_line_option(
+            models=[AqicnIAqiData, GzepbAqiData],
+            time_point=hour_now,
+            display_station=self.kwargs['display_name'])
+
         return context
