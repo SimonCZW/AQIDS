@@ -1,0 +1,115 @@
+<html xmlns="http://www.w3.org/1999/xhtml" dir="ltr" lang="zh-CN" xml:lang="zh-CN">
+{% load staticfiles %}
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>{% block title %}{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'mainapp/css/common.css' %}">
+    <link rel="stylesheet" href="{% static 'mainapp/css/citydata.css' %}">
+    <script src="{% static 'mainapp/js/echarts.js' %}"></script> 
+    <style>
+      #switchbanner {
+        width: 950px;
+        margin: 0px auto;
+
+      }
+
+      #switchbanner a{
+        display: block;
+        float: right;
+        width: 100px;
+        height: 20px;
+        text-align: center;
+        font-size: 15px;
+        color: #555;
+        padding-top: 3px;
+        padding-bottom: 3px;
+      }
+
+      .current_banner,
+      #switchbanner a:hover{
+        color: orange;
+        background-color: #fff;
+      }
+    </style>
+</head>
+<body>
+  <!-- 地图入口 -->
+  <div class="topnav_width">
+      <div class="topnav">
+          <div class="topnav_right">
+              <a class="topnav_map" href="/map.html">进入地图模式&gt;&gt;</a>
+          </div>
+      </div>
+  </div>
+
+  <!--banner上的阴影-->
+  <div class="banner_shadow"></div>
+
+  <!-- banner -->
+  {% block banner %}{% endblock %}
+
+  <!-- 数据表 -->
+    <!--主体内容-->
+    <div class="main_width">  
+      <div class="main">
+
+        <!--监测点数据-->
+        <div class="panel_jiance">
+          <p class="pg_title">{{ display_name }}</p>
+          <div class="pj_area ui-switchable" data-widget-cid="widget-1">
+            <div class="pj_area_tab ui-switchable-nav">
+              <a class="tab_caqi current ui-switchable-trigger" href="javascript:void(0)">中国标准<i></i></a>
+              <!--
+              <a class="tab_maqi ui-switchable-trigger" href="javascript:void(0)">美国标准<i></i></a>
+              -->
+              <div class="clear"></div>
+            </div>
+            <p class="pj_area_links">
+              <a href="/news/96.html" target="_blank">查看中美标准差异&gt;&gt;</a>
+            </p>
+            
+            <!-- 数据列表 -->
+            {% block content %}{% endblock %}
+
+          </div><!-- pj_area -->
+        </div><!--监测点数据-->
+
+        <!-- 折线图 -->
+        {% block echarts %}{% endblock %}
+      
+      </div><!-- main -->
+    </div><!--main-width-->
+
+</body>
+</html>
+
+{% block echarts_script %}{% endblock %}
+
+<script type="text/javascript">
+function nTabs(thisObj, Num) {
+    var tabObj = thisObj.parentNode.id;
+    var tabList = document.getElementById(tabObj).getElementsByTagName("a");
+    for (var index = 0; index < tabList.length; index++) {
+        if (index == Num) {
+            thisObj.className = "active";
+            document.getElementById(tabObj + "_Content" + index).style.display = "block";
+        } else {
+            tabList[index].className = "normal";
+            document.getElementById(tabObj + "_Content" + index).style.display = "none";
+        }
+    }
+}
+window.onload = function() {
+    var obox = document.getElementById("switchbanner");
+    var lis = obox.getElementsByTagName("a");
+    for (var index = 0; index < lis.length; index++) {
+        lis[index].index = index;
+        lis[index].onclick = function() {
+            nTabs(this, this.index);
+            //插入修改class
+            this.setAttribute("class", "current_banner");
+        }
+    }
+}
+</script>

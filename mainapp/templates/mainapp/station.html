@@ -1,3 +1,590 @@
-{{ display_name }}
-{{ gzepb_station_data }}
-{{ aqicn_station_data }}
+{% extends "./station_base.html" %}
+
+{% block title %}{{ display_name }}{% endblock %}
+
+{% block banner %}
+  <!-- banner 同时对比gzepb,aqicn站点 -->
+  {% if aqicn_lastest_data and gzepb_lastest_data %}
+    <div id=switchbanner>
+      <a class="active current_banner">Gzepb数据</a>
+      <a class="normal">Aqicn数据</a>
+    </div>
+    
+    <!-- gzepb -->
+    <!--<div class="citydata_banner_width banner_bg_level1" id="switchbanner_Content0">-->
+    {% with gzepb_quality=gzepb_lastest_data.quality.china_quality %}
+      {% if gzepb_quality == "优" %}
+        <div class="citydata_banner_width banner_bg_level1" id="switchbanner_Content0">
+      {% elif gzepb_quality == "良" %}
+        <div class="citydata_banner_width banner_bg_level2" id="switchbanner_Content0">
+      {% elif gzepb_quality == "轻度污染" %}
+        <div class="citydata_banner_width banner_bg_level3" id="switchbanner_Content0">
+      {% elif gzepb_quality == "中度污染" %}
+        <div class="citydata_banner_width banner_bg_level4" id="switchbanner_Content0">
+      {% elif gzepb_quality == "重度污染" %}
+        <div class="citydata_banner_width banner_bg_level5" id="switchbanner_Content0">
+      {% elif gzepb_quality == "严重污染" %}
+        <div class="citydata_banner_width banner_bg_level6" id="switchbanner_Content0">
+      {% else %}
+        <div class="citydata_banner_width banner_bg_level1" id="switchbanner_Content0">
+      {% endif %}
+    {% endwith %}
+      <div class="citydata_banner">
+        <!-- banner 上部分 -->
+        <div class="citydata_banner_top">
+          <div class="citydata_changecity">
+            <span class="city_name">{{ display_name }}</span>
+            <span class="city_description">广州空气质量发布中心站点</span>
+          </div>
+          <div class="citydata_station_updatetime">
+            {{ gzepb_lastest_data.time_point|date:"Y-m-d H:i:s" }}
+          </div>
+          <div class="clear"></div>
+        </div>
+        
+        <!-- 透明层 -->
+        <div class="citydata_banner_opacity">
+          <!-- 左边 -->
+          <div class="cbo_left">
+            <!-- AQI值 -->
+            <div class="cbol_aqi">
+              {% if gzepb_lastest_data.aqi %}
+                <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ gzepb_lastest_data.aqi|add:0 }}</a>
+              {% else %}
+                <p class="cbol_aqi_num cbol_aqi_nodata"><i></i></p>
+              {% endif %}
+              <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
+            </div>
+            <!-- 首要污染物 -->
+            <div class="cbol_wuranwu">
+              {% if gzepb_lastest_data.dominentpol %}
+                <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ gzepb_lastest_data.dominentpol }}</a>
+              {% else %}
+                <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+              {% endif %}
+              <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
+            </div>
+            <!-- PM2.5浓度/IAQI值 -->
+            <div class="cbol_nongdu">
+              {% if gzepb_lastest_data.pm25_1h %}
+                <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                  <span class="cbol_nongdu_num_1">{{ gzepb_lastest_data.pm25_1h|add:0 }}</span>
+                  <span class="cbol_nongdu_num_2">微克/立方米</span>
+                </a>
+                <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+              {% else %}
+                <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                  <i></i>
+                </a>
+                <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+              {% endif %}
+            </div>
+          <!-- 左边 -->
+          </div>
+
+          <!-- 右边 -->
+          <div class="cbo_right">
+            <div class="cbor_gauge">
+              {% with quality=gzepb_lastest_data.quality.china_quality %}
+                {% if quality == "优" %}
+                  <span class="cbor_gauge_level1">{{ quality }}</span>
+                {% elif quality == "良" %}
+                  <span class="cbor_gauge_level2">{{ quality }}</span>
+                {% elif quality == "轻度污染" %}
+                  <span class="cbor_gauge_level3">{{ quality }}</span>
+                {% elif quality == "中度污染" %}
+                  <span class="cbor_gauge_level4">{{ quality }}</span>
+                {% elif quality == "重度污染" %}
+                  <span class="cbor_gauge_level5">{{ quality }}</span>
+                {% elif quality == "严重污染" %}
+                  <span class="cbor_gauge_level6">{{ quality }}</span>
+                {% else %}
+                  <span class="cbor_gauge_level1">暂无数据</span>
+                {% endif %}
+              {% endwith %}
+              <p class="cbor_gauge_img"></p>
+              <p class="cbor_gauge_num">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;500</p>
+            </div>
+
+            <!-- 温馨提示 -->
+            <div class="cbor_tips">
+              <p>
+                <span>温馨提示：</span>{{ gzepb_lastest_data.quality.advice }}
+              </p>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="cbo_opacity"></div>
+      </div>
+    </div>
+    
+
+    <!-- aqicn -->
+    <!--<div class="citydata_banner_width banner_bg_level2 none" id="switchbanner_Content1">-->
+    {% with aqicn_quality=aqicn_lastest_data.quality.china_quality %}
+      {% if aqicn_quality == "优" %}
+        <div class="citydata_banner_width banner_bg_level1 none" id="switchbanner_Content1">
+      {% elif aqicn_quality == "良" %}
+        <div class="citydata_banner_width banner_bg_level2 none" id="switchbanner_Content1">
+      {% elif aqicn_quality == "轻度污染" %}
+        <div class="citydata_banner_width banner_bg_level3 none" id="switchbanner_Content1">
+      {% elif aqicn_quality == "中度污染" %}
+        <div class="citydata_banner_width banner_bg_level4 none" id="switchbanner_Content1">
+      {% elif aqicn_quality == "重度污染" %}
+        <div class="citydata_banner_width banner_bg_level5 none" id="switchbanner_Content1">
+      {% elif aqicn_quality == "严重污染" %}
+        <div class="citydata_banner_width banner_bg_level6 none" id="switchbanner_Content1">
+      {% else %}
+        <div class="citydata_banner_width banner_bg_level1 none" id="switchbanner_Content1">
+      {% endif %}
+    {% endwith %}
+      <div class="citydata_banner">
+        
+        <!-- banner 上部分 -->
+        <div class="citydata_banner_top">
+          <div class="citydata_changecity">
+            <span class="city_name">{{ display_name }}</span>
+            <span class="city_description">美国领事馆站点</span>
+          </div>
+          <div class="citydata_station_updatetime">
+            {{ aqicn_lastest_data.time_point|date:"Y-m-d H:i:s" }}
+          </div>
+          <div class="clear"></div>
+        </div>
+        
+        <!-- 透明层 -->
+        <div class="citydata_banner_opacity">
+          <!-- 左边 -->
+          <div class="cbo_left">
+            <!-- AQI值 -->
+            <div class="cbol_aqi">
+              {% if aqicn_lastest_data.aqi %}
+                <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ aqicn_lastest_data.aqi|add:0 }}</a>
+              {% else %}
+                <p class="cbol_aqi_num cbol_aqi_nodata"><i></i></p>
+              {% endif %}
+              <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
+            </div>
+            <!-- 首要污染物 -->
+            <div class="cbol_wuranwu">
+              {% if aqicn_lastest_data.dominentpol %}
+                <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ aqicn_lastest_data.dominentpol|upper }}</a>
+              {% else %}
+                <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+              {% endif %}
+              <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
+            </div>
+            <!-- PM2.5浓度/IAQI值 -->
+            <div class="cbol_nongdu">
+              {% if aqicn_lastest_data.pm25_iaqi %}
+                <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                  <span class="cbol_nongdu_num_iaqi">{{ aqicn_lastest_data.pm25_iaqi|add:0 }}</span>
+                </a>
+                <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5 IAQI</a>
+              {% else %}
+                <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                  <i></i>
+                </a>
+                <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5 IAQI</a>
+              {% endif %} 
+            </div>
+          <!-- 左边 -->
+          </div>
+          <!-- 右边 -->
+          <div class="cbo_right">
+            <div class="cbor_gauge">
+              {% with quality=aqicn_lastest_data.quality.china_quality %}
+                {% if quality == "优" %}
+                  <span class="cbor_gauge_level1">{{ quality }}</span>
+                {% elif quality == "良" %}
+                  <span class="cbor_gauge_level2">{{ quality }}</span>
+                {% elif quality == "轻度污染" %}
+                  <span class="cbor_gauge_level3">{{ quality }}</span>
+                {% elif quality == "中度污染" %}
+                  <span class="cbor_gauge_level4">{{ quality }}</span>
+                {% elif quality == "重度污染" %}
+                  <span class="cbor_gauge_level5">{{ quality }}</span>
+                {% elif quality == "严重污染" %}
+                  <span class="cbor_gauge_level6">{{ quality }}</span>
+                {% else %}
+                  <span class="cbor_gauge_level1">暂无数据</span>
+                {% endif %}
+              {% endwith %}
+              <p class="cbor_gauge_img"></p>
+              <p class="cbor_gauge_num">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;500</p>
+            </div>
+
+            <!-- 温馨提示 -->
+            <div class="cbor_tips">
+              <p>
+                <span>温馨提示：</span>{{ aqicn_lastest_data.quality.advice }}
+              </p>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="cbo_opacity"></div>
+      </div> 
+    </div>
+  
+  <!-- banner 仅aqicn站点/仅gzepb/无数据情况/站点不存在也会显示这里 -->
+  {% else %}
+    <!-- banner背景颜色 -->
+    {% if gzepb_lastest_data %}
+      {% with gzepb_quality=gzepb_lastest_data.quality.china_quality %}
+        {% if gzepb_quality == "优" %}
+          <div class="citydata_banner_width banner_bg_level1">
+        {% elif gzepb_quality == "良" %}
+          <div class="citydata_banner_width banner_bg_level2">
+        {% elif gzepb_quality == "轻度污染" %}
+          <div class="citydata_banner_width banner_bg_level3">
+        {% elif gzepb_quality == "中度污染" %}
+          <div class="citydata_banner_width banner_bg_level4">
+        {% elif gzepb_quality == "重度污染" %}
+          <div class="citydata_banner_width banner_bg_level5">
+        {% elif gzepb_quality == "严重污染" %}
+          <div class="citydata_banner_width banner_bg_level6">
+        {% else %}
+          <div class="citydata_banner_width banner_bg_level1">
+        {% endif %}
+      {% endwith %}
+    {% elif aqicn_lastest_data %}
+      {% with aqicn_quality=aqicn_lastest_data.quality.china_quality %}
+        {% if aqicn_quality == "优" %}
+          <div class="citydata_banner_width banner_bg_level1">
+        {% elif aqicn_quality == "良" %}
+          <div class="citydata_banner_width banner_bg_level2">
+        {% elif aqicn_quality == "轻度污染" %}
+          <div class="citydata_banner_width banner_bg_level3">
+        {% elif aqicn_quality == "中度污染" %}
+          <div class="citydata_banner_width banner_bg_level4">
+        {% elif aqicn_quality == "重度污染" %}
+          <div class="citydata_banner_width banner_bg_level5">
+        {% elif aqicn_quality == "严重污染" %}
+          <div class="citydata_banner_width banner_bg_level6">
+        {% else %}
+          <div class="citydata_banner_width banner_bg_level1">
+        {% endif %}
+      {% endwith %}
+    {% else %}
+      <div class="citydata_banner_width banner_bg_level1">
+    {% endif %}
+      <div class="citydata_banner">
+        <!-- banner 上部分 -->
+        <div class="citydata_banner_top">
+          <div class="citydata_changecity">
+            <span class="city_name">{{ display_name }}</span>
+            {% if aqicn_lastest_data %}
+              <span class="city_description">美国领事馆站点</span>
+            {% elif gzepb_lastest_data %}
+              <span class="city_description">广州空气质量发布中心站点</span>
+            {% else %}
+              <span class="city_description">暂无数据</span>
+            {% endif %}
+          </div>
+          <div class="citydata_station_updatetime">
+            {% if aqicn_lastest_data %}
+              {{ aqicn_lastest_data.time_point|date:"Y-m-d H:i:s" }}
+            {% elif gzepb_lastest_data %}
+              {{ gzepb_lastest_data.time_point|date:"Y-m-d H:i:s" }}
+            {% endif %}
+          </div>
+          <div class="clear"></div>
+        </div>
+        
+        <!-- 透明层 -->
+        <div class="citydata_banner_opacity">
+          <!-- 左边 -->
+          <div class="cbo_left">
+            <!-- AQI值 -->
+            <div class="cbol_aqi">
+              {% if gzepb_lastest_data %}
+                {% if gzepb_lastest_data.aqi %}
+                  <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ gzepb_lastest_data.aqi|add:0 }}</a>
+                {% else %}
+                 <i></i>  
+                {% endif %}
+              {% elif aqicn_lastest_data %}
+                {% if aqicn_lastest_data.aqi %}
+                  <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ aqicn_lastest_data.aqi|add:0 }}</a>
+                {% else %}
+                 <i></i>  
+                {% endif %}
+              {% else %}
+                <p class="cbol_aqi_num cbol_aqi_nodata"><i></i></p>
+              {% endif %}
+              <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
+            </div>
+
+            <!-- 首要污染物 -->
+            <div class="cbol_wuranwu">
+              {% if gzepb_lastest_data %}
+                {% if gzepb_lastest_data.dominentpol %}
+                  <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ gzepb_lastest_data.dominentpol }}</a>
+                {% else %}
+                  <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+                {% endif %}
+              {% elif aqicn_lastest_data %}
+                {% if aqicn_lastest_data.dominentpol %}
+                  <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ aqicn_lastest_data.dominentpol|upper }}</a>
+                {% else %}
+                  <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+                {% endif %}
+              {% else %}
+                <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+              {% endif %}
+              <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
+            </div>
+
+            <!-- PM2.5浓度/IAQI值 -->
+            <div class="cbol_nongdu">
+              {% if gzepb_lastest_data %}
+                {% if gzepb_lastest_data.pm25_1h %}
+                  <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                    <span class="cbol_nongdu_num_1">{{ gzepb_lastest_data.pm25_1h|add:0 }}</span>
+                    <span class="cbol_nongdu_num_2">微克/立方米</span>
+                  </a>
+                  <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                {% else %}
+                  <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                    <i></i>
+                  </a>
+                  <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                {% endif %}
+              {% elif aqicn_lastest_data %}
+                {% if aqicn_lastest_data.pm25_iaqi %}
+                  <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                    <span class="cbol_nongdu_num_iaqi">{{ aqicn_lastest_data.pm25_iaqi|add:0 }}</span>
+                  </a>
+                  <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5 IAQI</a>
+                {% else %}
+                  <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                    <i></i>
+                  </a>
+                  <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5 IAQI</a>
+                {% endif %} 
+              {% else %}
+                  <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                    <i></i>
+                  </a>
+                  <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+              {% endif %}
+            </div>
+          </div>
+          
+          <!-- 右边 -->
+          <div class="cbo_right">
+            <div class="cbor_gauge">
+              {% if gzepb_lastest_data %}
+                {% with quality=gzepb_lastest_data.quality.china_quality %}
+                  {% if quality == "优" %}
+                    <span class="cbor_gauge_level1">{{ quality }}</span>
+                  {% elif quality == "良" %}
+                    <span class="cbor_gauge_level2">{{ quality }}</span>
+                  {% elif quality == "轻度污染" %}
+                    <span class="cbor_gauge_level3">{{ quality }}</span>
+                  {% elif quality == "中度污染" %}
+                    <span class="cbor_gauge_level4">{{ quality }}</span>
+                  {% elif quality == "重度污染" %}
+                    <span class="cbor_gauge_level5">{{ quality }}</span>
+                  {% elif quality == "严重污染" %}
+                    <span class="cbor_gauge_level6">{{ quality }}</span>
+                  {% else %}
+                    <span class="cbor_gauge_level1">暂无数据</span>
+                  {% endif %}
+                {% endwith %}
+              {% elif aqicn_lastest_data %}
+                {% with quality=aqicn_lastest_data.quality.china_quality %}
+                  {% if quality == "优" %}
+                    <span class="cbor_gauge_level1">{{ quality }}</span>
+                  {% elif quality == "良" %}
+                    <span class="cbor_gauge_level2">{{ quality }}</span>
+                  {% elif quality == "轻度污染" %}
+                    <span class="cbor_gauge_level3">{{ quality }}</span>
+                  {% elif quality == "中度污染" %}
+                    <span class="cbor_gauge_level4">{{ quality }}</span>
+                  {% elif quality == "重度污染" %}
+                    <span class="cbor_gauge_level5">{{ quality }}</span>
+                  {% elif quality == "严重污染" %}
+                    <span class="cbor_gauge_level6">{{ quality }}</span>
+                  {% else %}
+                    <span class="cbor_gauge_level1">暂无数据</span>
+                  {% endif %}
+                {% endwith %}
+              {% else %}
+                <span class="cbor_gauge_level1">暂无数据</span>
+              {% endif %}
+              <p class="cbor_gauge_img"></p>
+              <p class="cbor_gauge_num">0&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;50&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;100&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;150&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;200&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;300&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;500</p>
+            </div>
+
+            <!-- 温馨提示 -->
+            <div class="cbor_tips">
+              <p>
+                {% if gzepb_lastest_data %}
+                  <span>温馨提示：</span>{{ gzepb_lastest_data.quality.advice }}
+                {% elif aqicn_lastest_data %}
+                  <span>温馨提示：</span>{{ aqicn_lastest_data.quality.advice }}
+                {% else %}
+                  <span></span>
+                {% endif %}
+              </p>
+            </div>
+          </div>
+          <div class="clear"></div>
+        </div>
+        <div class="cbo_opacity"></div>
+      </div>
+    </div>
+  {% endif %}
+{% endblock %}
+
+<!-- 主题数据表 -->
+{% block content %}
+  <!-- banner 同时对比gzepb,aqicn站点 -->
+  {% if aqicn_lastest_data and gzepb_lastest_data %}
+    <div class="pj_area_data">
+      <!-- 数据表头 -->
+      <div class="pj_area_data_title">
+        <span class="pjadt_location">数据源</span>
+        <a class="pjadt_aqi aqi_arrow_top" href="javascript:void(0)" style="cursor:default;">
+            <span>AQI</span>
+        </a>
+        <span class="pjadt_quality">空气质量状况</span>
+        <span class="pjadt_wuranwu">首要污染物</span>
+        <span class="pjadt_pm25">PM2.5 IAQI</span>
+        <span class="pjadt_pm10">PM10 IAQI</span>
+        <div class="clear"></div>
+      </div>
+      <ul class="pj_area_data_details">
+        <li class="pj_area_data_item pj_area_data_item_darkbg">
+          <b></b>
+          <a class="pjadt_location" href="http://aqicn.org/city/guangzhou/cn/" title="数据源" target="_blank">美国领事馆数据</a>
+          <span class="pjadt_aqi">{{ aqicn_lastest_data.aqi }}<i class=""></i></span>
+          <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ aqicn_lastest_data.quality.usa_quality }}</em></span>
+          <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ aqicn_lastest_data.dominentpol }}</a>
+          <span class="pjadt_pm25">{{ aqicn_lastest_data.pm25_iaqi }} <i class=""></i></span>
+          <span class="pjadt_pm10">{{ aqicn_lastest_data.pm10_iaqi }} <i class=""></i></span>
+          <div class="clear"></div>
+        </li>                             
+      </ul>
+      <ul class="pj_area_data_details">
+        <li class="pj_area_data_item pj_area_data_item_darkbg">
+          <b></b>
+          <a class="pjadt_location" href="http://www.gzepb.gov.cn/aqi/" title="数据源" target="_blank">空气质量发布中心数据</a>
+          <span class="pjadt_aqi">{{ gzepb_lastest_data.aqi }}<i class=""></i></span>
+          <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ gzepb_lastest_data.quality.usa_quality }}</em></span>
+          <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ gzepb_lastest_data.dominentpol }}</a>
+          <span class="pjadt_pm25">{{ gzepb_lastest_data.pm25_iaqi }} <i class=""></i></span>
+          <span class="pjadt_pm10">{{ gzepb_lastest_data.pm10_iaqi }} <i class=""></i></span>
+          <div class="clear"></div>
+        </li>                             
+      </ul>
+    </div>
+  <!-- banner 仅aqicn站点/仅gzepb/无数据情况/站点不存在也会显示这里 -->
+  {% else %}
+    <div class="pj_area_data">
+      <!-- 数据表头 -->
+      <div class="pj_area_data_title">
+        <span class="pjadt_location">数据源</span>
+        <a class="pjadt_aqi aqi_arrow_top" href="javascript:void(0)" style="cursor:default;">
+            <span>AQI</span>
+        </a>
+        <span class="pjadt_quality">空气质量状况</span>
+        <span class="pjadt_wuranwu">首要污染物</span>
+        <span class="pjadt_pm25">PM2.5 IAQI</span>
+        <span class="pjadt_pm10">PM10 IAQI</span>
+        <div class="clear"></div>
+      </div>
+      <ul class="pj_area_data_details">
+        <li class="pj_area_data_item pj_area_data_item_darkbg">
+          <b></b>
+          {% if aqicn_lastest_data %}
+            <a class="pjadt_location" href="http://aqicn.org/city/guangzhou/cn/" title="数据源" target="_blank">美国领事馆数据</a>
+            <span class="pjadt_aqi">{{ aqicn_lastest_data.aqi }}<i class=""></i></span>
+            <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ aqicn_lastest_data.quality.usa_quality }}</em></span>
+            <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ aqicn_lastest_data.dominentpol }}</a>
+            <span class="pjadt_pm25">{{ aqicn_lastest_data.pm25_iaqi }} <i class=""></i></span>
+            <span class="pjadt_pm10">{{ aqicn_lastest_data.pm10_iaqi }} <i class=""></i></span>
+            <div class="clear"></div>
+          {% elif gzepb_lastest_data %}
+            <a class="pjadt_location" href="http://www.gzepb.gov.cn/aqi/" title="数据源" target="_blank">空气质量发布中心数据</a>
+            <span class="pjadt_aqi">{{ gzepb_lastest_data.aqi }}<i class=""></i></span>
+            <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ gzepb_lastest_data.quality.usa_quality }}</em></span>
+            <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ gzepb_lastest_data.dominentpol }}</a>
+            <span class="pjadt_pm25">{{ gzepb_lastest_data.pm25_iaqi }} <i class=""></i></span>
+            <span class="pjadt_pm10">{{ gzepb_lastest_data.pm10_iaqi }} <i class=""></i></span>
+            <div class="clear"></div>
+          {% else %}
+            <a class="pjadt_location" href="#" title="详细数据">无数据</a>
+            <span class="pjadt_aqi">无<i class=""></i></span>
+            <span class="pjadt_quality">无</span>
+            <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">无</a>
+            <span class="pjadt_pm25">无<i class=""></i></span>
+            <span class="pjadt_pm10">无<i class=""></i></span>
+            <div class="clear"></div>
+          {% endif %}
+        </li>                             
+      </ul>
+    </div>
+  {% endif %}
+{% endblock %}
+
+<!-- 曲线图 -->
+{% block echarts %}
+    <p class="pg_title">24小时空气质量指数(AQI)变化趋势</p>
+    <div class="pg_area">
+      <div class="pg_area_tab" id="myTab0">
+        <a class="active current">最近24小时<i></i></a>
+        <!--<a class="normal">最近30天<i></i></a>-->
+        <div class="clear"></div>
+      </div>
+      <div id="myTab0_Content0">
+        <div id="pg_content_24h" class="pg_content" style="background-color:#f7f7f7;"></div>
+      </div>
+      <!--<div id="myTab0_Content1" class="none">-->
+        <!--<div id="aqicn" class="pg_content" style="background-color:#f7f7f7;"></div>-->
+      <!--</div>-->
+    </div>
+{% endblock %}
+
+
+{% block echarts_script %}
+<script type="text/javascript">
+function nTabs(thisObj, Num) {
+    var tabObj = thisObj.parentNode.id;
+    var tabList = document.getElementById(tabObj).getElementsByTagName("a");
+    for (var index = 0; index < tabList.length; index++) {
+        if (index == Num) {
+            thisObj.className = "active";
+            document.getElementById(tabObj + "_Content" + index).style.display = "block";
+        } else {
+            tabList[index].className = "normal";
+            document.getElementById(tabObj + "_Content" + index).style.display = "none";
+        }
+    }
+}
+window.onload = function() {
+    var obox = document.getElementById("myTab0");
+    var lis = obox.getElementsByTagName("a");
+    for (var index = 0; index < lis.length; index++) {
+        lis[index].index = index;
+        lis[index].onclick = function() {
+            nTabs(this, this.index);
+            //插入修改class
+            this.setAttribute("class", "current");
+        }
+    }
+}
+</script>
+
+<script type="text/javascript">
+var myChart = echarts.init(document.getElementById('pg_content_24h'));
+{% load js %}
+var option = {{ station_option_24h|js }}
+myChart.setOption(option);
+
+</script>
+
+{% endblock %}
