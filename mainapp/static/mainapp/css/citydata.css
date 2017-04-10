@@ -95,6 +95,14 @@
     margin-top: 21px;
 }
 
+.citydata_station_updatetime {
+    float: right;
+    display: inline;
+    font-size: 14px;
+    color: #fff;
+    margin-top: 28px;
+}
+
 .citydata_updatetime {
     display: inline;
     float: right;
