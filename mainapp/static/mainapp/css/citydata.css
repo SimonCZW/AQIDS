@@ -417,14 +417,12 @@ a.cbor_morelink:hover {
     text-align: center;
 }
 
-.pj_area_data_title span.pjadt_location,
-.pj_area_data_title a.pjadt_aqi {
+.pj_area_data_title span.pjadt_aqi,
+.pj_area_data_title span.pjadt_location {
     text-align: left;
     text-indent: 20px;
 }
 
-
-/*AQI后边的排序三角符号*/
 
 .pjadt_aqi span {
     float: left;
@@ -432,44 +430,6 @@ a.cbor_morelink:hover {
     padding-right: 8px;
 }
 
-.tabletittle_arrow {
-    position: relative;
-}
-
-.tabletittle_arrow i {
-    float: left;
-    display: inline;
-    position: absolute;
-}
-
-i.tabletittle_arrow_top {
-    top: 17px;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-bottom: 5px solid #b2b2b2;
-}
-
-i.tabletittle_arrow_down {
-    top: 24px;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #b2b2b2;
-}
-
-
-/*激活的三角颜色*/
-
-a.aqi_arrow_top i.tabletittle_arrow_top {
-    border-bottom-color: #4a9828;
-}
-
-a.aqi_arrow_down i.tabletittle_arrow_down {
-    border-top-color: #4a9828;
-}
 
 ul.pj_area_data_details {}
 
@@ -522,6 +482,7 @@ ul.pj_area_data_details li.pj_area_data_item_active b {
     width: 180px;
 }
 
+
 .pjadt_aqi {
     width: 120px;
 }
@@ -544,13 +505,60 @@ ul.pj_area_data_details li.pj_area_data_item_active b {
     width: 170px;
 }
 
-ul.pj_area_data_details li.pj_area_data_item span.pjadt_pm25 em,
-ul.pj_area_data_details li.pj_area_data_item span.pjadt_pm10 em {
-    font-family: Verdana, Arial, Helvetica, sans-serif;
-    font-size: 12px;
-    font-style: normal;
+/* station 页面content部分 */
+div.station span.pjadt_location,
+ul.station li.pj_area_data_item a.pjadt_location {
+    width: 170px;
 }
 
+div.station span.pjadt_aqi,
+ul.station li.pj_area_data_item span.pjadt_aqi{
+    width: 70px;
+}
+
+div.station span.pjadt_quality, 
+ul.station li.pj_area_data_item span.pjadt_quality{
+    width 110px;
+}
+
+div.station span.pjadt_wuranwu,
+ul.station li.pj_area_data_item span.pjadt_wuranwu{
+    width: 70px;
+    height: 30px;
+    overflow: hidden;
+}
+
+div.station span.pjadt_pm25,
+ul.station li.pj_area_data_item span.pjadt_pm25{
+    width: 100px;
+}
+
+div.station span.pjadt_pm10,
+ul.station li.pj_area_data_item span.pjadt_pm10{
+    width: 80px;
+}
+
+div.station span.pjadt_so2,
+ul.station li.pj_area_data_item span.pjadt_so2{
+    width: 80px;
+}
+
+div.station span.pjadt_no2,
+ul.station li.pj_area_data_item span.pjadt_no2{
+    width: 75px;
+}
+
+div.station span.pjadt_co,
+ul.station li.pj_area_data_item span.pjadt_co{
+    width: 75px;
+}
+
+div.station span.pjadt_o3,
+ul.station li.pj_area_data_item span.pjadt_o3{
+    width: 70px;
+}
+
+/* quality部分底色 */
 .pjadt_quality em {
     display: inline-block;
     width: 110px;
@@ -596,11 +604,6 @@ ul.pj_area_data_details li.pj_area_data_item a.pjadt_location:hover {
     font-weight: bold;
 }
 
-ul.pj_area_data_details li.pj_area_data_item a.pjadt_wuranwu:hover {
-    color: #1e9e69;
-    text-decoration: underline;
-}
-
 ul.pj_area_data_details li.pj_area_data_item .pjadt_location {
     text-align: left;
     overflow: hidden;
@@ -612,264 +615,6 @@ ul.pj_area_data_details li.pj_area_data_item span.pjadt_aqi {
     text-indent: 20px;
 }
 
-
-/*针对排行榜用的监测城市的表格数据，进行调整*/
-
-.rank_data {}
-
-.rank_data .pjadt_ranknum {
-    width: 100px;
-}
-
-.rank_data .rank_data_quality {
-    float: left;
-    display: inline;
-    position: relative;
-    width: 138px;
-    text-align: center;
-    margin: 10px 30px 0px 10px;
-}
-
-.rank_data .pjadt_location {
-    width: 150px;
-    margin-left: 20px;
-}
-
-.rank_data .pjadt_sheng {
-    width: 130px;
-}
-
-.rank_data ul.pj_area_data_details li.pj_area_data_item span.pjadt_aqi {
-    width: 150px;
-    text-align: center;
-    text-indent: 40px;
-    margin-right: 20px;
-}
-
-.rank_data .pjadt_pm25 {
-    width: 150px;
-}
-
-
-/*全国空气质量下拉选项*/
-
-.rank_data .rank_data_quality .pjadt_quality {
-    width: 138px;
-    height: 25px;
-    line-height: 25px;
-    cursor: pointer;
-}
-
-.rank_data .rank_data_quality .pjadt_quality span {
-    float: none;
-    display: inline-block;
-    color: #555;
-}
-
-.rank_data .rank_data_quality .pjadt_quality i {
-    float: none;
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #999;
-    margin: 10px 0px 0px 10px;
-}
-
-.rank_data_quality_active {
-    position: absolute;
-    top: 28px;
-    width: 134px;
-    left: 0px;
-    padding: 7px 0px;
-    border: #e8e8e8 solid 1px;
-    background-color: #fff;
-    z-index: 5;
-    line-height: 31px;
-    font-size: 14px;
-    -webkit-box-shadow: 0 1px 9px rgba(0, 0, 0, .2);
-    -moz-box-shadow: 0 1px 9px rgba(0, 0, 0, .2);
-    box-shadow: 0 1px 9px rgba(0, 0, 0, .2);
-}
-
-.rank_data_quality_active li {
-    float: left;
-    display: inline;
-    width: 134px;
-}
-
-.pj_area_data_title .rank_data_quality_active a {
-    width: 134px;
-    text-align: left;
-    text-indent: 20px;
-}
-
-.pj_area_data_title .rank_data_quality_active a i {
-    color: #bbb;
-    font-family: Arial, Helvetica, sans-serif;
-    padding-right: 10px;
-}
-
-.pj_area_data_title .rank_data_quality_active a:hover {
-    background-color: #f4f4f4;
-    color: #1e9e69;
-}
-
-.pj_area_data_title .rank_data_quality_active a:hover i {
-    color: #1e9e69;
-}
-
-
-/*激活下拉状态*/
-
-.rank_data_quality_hover .pjadt_quality {
-    background-color: #fff;
-}
-
-.rank_data .pj_area_data_item .pjadt_quality {
-    width: 150px;
-    text-align: left;
-    margin: 0px 30px 0px 30px;
-}
-
-
-/*按省份筛选*/
-
-.rank_data_shengfen {
-    position: relative;
-    float: left;
-    display: inline;
-    width: 170px;
-    text-align: center;
-    margin-top: 10px;
-}
-
-.rank_data_shengfen a.pjadt_sheng {
-    width: 130px;
-    height: 25px;
-    line-height: 25px;
-    cursor: pointer;
-}
-
-.rank_data_shengfen a.pjadt_sheng span {
-    float: none;
-    display: inline-block;
-}
-
-.rank_data_shengfen a.pjadt_sheng i {
-    float: none;
-    display: inline-block;
-    width: 0;
-    height: 0;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    border-top: 5px solid #999;
-    margin: 10px 0px 0px 10px;
-}
-
-.rank_data_shengfen_hover a.pjadt_sheng {
-    background-color: #fff;
-}
-
-.rank_data_shengfen_active {
-    position: absolute;
-    top: 28px;
-    width: 300px;
-    padding: 7px 20px 20px 20px;
-    left: 0px;
-    z-index: 5;
-    line-height: 30px;
-    font-size: 14px;
-    border: #e8e8e8 solid 1px;
-    background-color: #fff;
-    -webkit-box-shadow: 0 1px 9px rgba(0, 0, 0, .2);
-    -moz-box-shadow: 0 1px 9px rgba(0, 0, 0, .2);
-    box-shadow: 0 1px 9px rgba(0, 0, 0, .2);
-}
-
-.rank_data_shengfen_active_line1 {
-    padding-bottom: 5px;
-    margin-bottom: 10px;
-    border-bottom: #ddd dotted 1px;
-}
-
-.rank_data_shengfen_active a {
-    float: left;
-    display: inline;
-    width: 72px;
-    text-align: left;
-    margin: 0px 1px 1px 0px;
-}
-
-.rank_data_shengfen_active a span {
-    float: left;
-    display: inline;
-    padding: 0px 7px;
-}
-
-.rank_data_shengfen_active a:hover span {
-    background-color: #f4f4f4;
-    color: #1e9e69;
-}
-
-.rank_data .pj_area_data_title .pjadt_location {
-    width: 150px;
-    padding-left: 30px;
-}
-
-.rank_data .pj_area_data_title a.pjadt_aqi {
-    text-indent: 40px;
-    margin-right: 10px;
-}
-
-
-/*展开全部按钮*/
-
-.rank_data_showmore {
-    margin: 30px 0px 100px 0px;
-}
-
-a.rank_data_showmore_btn {
-    float: left;
-    display: inline;
-    margin-left: 350px;
-    width: 280px;
-    height: 45px;
-    line-height: 45px;
-    background-color: #e8e8e8;
-    border-bottom: #d8d8d8 solid 3px;
-    text-align: center;
-    font-size: 16px;
-    color: #555;
-}
-
-a.rank_data_showmore_btn span {
-    float: left;
-    display: inline;
-    margin-left: 95px;
-}
-
-a.rank_data_showmore_btn i {
-    float: left;
-    display: inline;
-    width: 10px;
-    height: 10px;
-    background: url(../images/common_sprite.png) -354px -86px no-repeat;
-    margin: 18px 0px 0px 10px;
-}
-
-a.rank_data_showmore_btn:hover {
-    background-color: #e1e1e1;
-}
-
-p.rank_data_showmore_tips {
-    float: right;
-    display: inline;
-    color: #555;
-    font-size: 14px;
-    margin-top: 20px;
-}
 
 
 /*曲线图部分*/
@@ -1849,4 +1594,26 @@ ul.message_hotcity_list li a b {
 
 .none {
     display: none;
+}
+
+/* 按钮:更多 */
+
+.slide {
+    padding: 0px;
+    width: 100px;
+    height: 40px;        
+}
+.btn-slide {
+    background-color: #57b382;
+    color: #fff;
+    width: 80px;
+    height: 25px;
+    text-align: center;
+    font-size: 14px;
+    border-radius: 8px;
+    display: block;
+    padding-top: 5px;
+}
+.bottom_more {
+    float: right;
 }
