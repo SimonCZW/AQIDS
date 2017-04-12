@@ -446,38 +446,49 @@
   {% if aqicn_lastest_data and gzepb_lastest_data %}
     <div class="pj_area_data">
       <!-- 数据表头 -->
-      <div class="pj_area_data_title">
+      <!--<div class="station_pj_area_data_title">-->
+      <div class="pj_area_data_title station">
         <span class="pjadt_location">数据源</span>
-        <a class="pjadt_aqi aqi_arrow_top" href="javascript:void(0)" style="cursor:default;">
-            <span>AQI</span>
-        </a>
+        <span class="pjadt_aqi">AQI</span>
         <span class="pjadt_quality">空气质量状况</span>
         <span class="pjadt_wuranwu">首要污染物</span>
         <span class="pjadt_pm25">PM2.5 IAQI</span>
         <span class="pjadt_pm10">PM10 IAQI</span>
+        <span class="pjadt_so2">SO2 IAQI</span>
+        <span class="pjadt_no2">NO2 IAQI</span>
+        <span class="pjadt_co">CO IAQI</span>
+        <span class="pjadt_o3">O3 IAQI</span>
         <div class="clear"></div>
       </div>
-      <ul class="pj_area_data_details">
+      <ul class="pj_area_data_details station">
         <li class="pj_area_data_item pj_area_data_item_darkbg">
           <b></b>
           <a class="pjadt_location" href="http://aqicn.org/city/guangzhou/cn/" title="数据源" target="_blank">美国领事馆数据</a>
           <span class="pjadt_aqi">{{ aqicn_lastest_data.aqi }}<i class=""></i></span>
           <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ aqicn_lastest_data.quality.usa_quality }}</em></span>
-          <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ aqicn_lastest_data.dominentpol }}</a>
+          <span class="pjadt_wuranwu">{{ aqicn_lastest_data.dominentpol }}</span>
           <span class="pjadt_pm25">{{ aqicn_lastest_data.pm25_iaqi }} <i class=""></i></span>
           <span class="pjadt_pm10">{{ aqicn_lastest_data.pm10_iaqi }} <i class=""></i></span>
+          <span class="pjadt_so2">{{ aqicn_lastest_data.so2_iaqi }} <i class=""></i></span>
+          <span class="pjadt_no2">{{ aqicn_lastest_data.no2_iaqi }} <i class=""></i></span>
+          <span class="pjadt_co">{{ aqicn_lastest_data.co_iaqi }} <i class=""></i></span>
+          <span class="pjadt_o3">{{ aqicn_lastest_data.o3_iaqi }} <i class=""></i></span>
           <div class="clear"></div>
         </li>                             
       </ul>
-      <ul class="pj_area_data_details">
+      <ul class="pj_area_data_details station">
         <li class="pj_area_data_item pj_area_data_item_darkbg">
           <b></b>
           <a class="pjadt_location" href="http://www.gzepb.gov.cn/aqi/" title="数据源" target="_blank">空气质量发布中心数据</a>
           <span class="pjadt_aqi">{{ gzepb_lastest_data.aqi }}<i class=""></i></span>
           <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ gzepb_lastest_data.quality.usa_quality }}</em></span>
-          <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ gzepb_lastest_data.dominentpol }}</a>
+          <span class="pjadt_wuranwu">{{ gzepb_lastest_data.dominentpol }}</span>
           <span class="pjadt_pm25">{{ gzepb_lastest_data.pm25_iaqi }} <i class=""></i></span>
           <span class="pjadt_pm10">{{ gzepb_lastest_data.pm10_iaqi }} <i class=""></i></span>
+          <span class="pjadt_so2">{{ gzepb_lastest_data.so2_iaqi }} <i class=""></i></span>
+          <span class="pjadt_no2">{{ gzepb_lastest_data.no2_iaqi }} <i class=""></i></span>
+          <span class="pjadt_co">{{ gzepb_lastest_data.co_iaqi }} <i class=""></i></span>
+          <span class="pjadt_o3">{{ gzepb_lastest_data.o3_iaqi }} <i class=""></i></span>
           <div class="clear"></div>
         </li>                             
       </ul>
@@ -486,35 +497,48 @@
   {% else %}
     <div class="pj_area_data">
       <!-- 数据表头 -->
-      <div class="pj_area_data_title">
+      <div class="pj_area_data_title station">
         <span class="pjadt_location">数据源</span>
-        <a class="pjadt_aqi aqi_arrow_top" href="javascript:void(0)" style="cursor:default;">
-            <span>AQI</span>
-        </a>
+        <!--<a class="pjadt_aqi aqi_arrow_top" href="javascript:void(0)" style="cursor:default;">-->
+            <!--<span>AQI</span>-->
+        <!--</a>-->
+        <span class="pjadt_aqi">AQI</span>
         <span class="pjadt_quality">空气质量状况</span>
         <span class="pjadt_wuranwu">首要污染物</span>
         <span class="pjadt_pm25">PM2.5 IAQI</span>
         <span class="pjadt_pm10">PM10 IAQI</span>
+        <span class="pjadt_so2">SO2 IAQI</span>
+        <span class="pjadt_no2">NO2 IAQI</span>
+        <span class="pjadt_co">CO IAQI</span>
+        <span class="pjadt_o3">O3 IAQI</span>
         <div class="clear"></div>
       </div>
-      <ul class="pj_area_data_details">
+      <ul class="pj_area_data_details station">
         <li class="pj_area_data_item pj_area_data_item_darkbg">
           <b></b>
           {% if aqicn_lastest_data %}
             <a class="pjadt_location" href="http://aqicn.org/city/guangzhou/cn/" title="数据源" target="_blank">美国领事馆数据</a>
             <span class="pjadt_aqi">{{ aqicn_lastest_data.aqi }}<i class=""></i></span>
             <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ aqicn_lastest_data.quality.usa_quality }}</em></span>
-            <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ aqicn_lastest_data.dominentpol }}</a>
+            <span class="pjadt_wuranwu">{{ aqicn_lastest_data.dominentpol }}</span>
             <span class="pjadt_pm25">{{ aqicn_lastest_data.pm25_iaqi }} <i class=""></i></span>
             <span class="pjadt_pm10">{{ aqicn_lastest_data.pm10_iaqi }} <i class=""></i></span>
+            <span class="pjadt_so2">{{ aqicn_lastest_data.so2_iaqi }} <i class=""></i></span>
+            <span class="pjadt_no2">{{ aqicn_lastest_data.no2_iaqi }} <i class=""></i></span>
+            <span class="pjadt_co">{{ aqicn_lastest_data.co_iaqi }} <i class=""></i></span>
+            <span class="pjadt_o3">{{ aqicn_lastest_data.o3_iaqi }} <i class=""></i></span>
             <div class="clear"></div>
           {% elif gzepb_lastest_data %}
             <a class="pjadt_location" href="http://www.gzepb.gov.cn/aqi/" title="数据源" target="_blank">空气质量发布中心数据</a>
             <span class="pjadt_aqi">{{ gzepb_lastest_data.aqi }}<i class=""></i></span>
             <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ gzepb_lastest_data.quality.usa_quality }}</em></span>
-            <a class="pjadt_wuranwu" href="/news/387.html" title="颗粒物(PM10)" target="_blank">{{ gzepb_lastest_data.dominentpol }}</a>
+            <span class="pjadt_wuranwu">{{ gzepb_lastest_data.dominentpol }}</span>
             <span class="pjadt_pm25">{{ gzepb_lastest_data.pm25_iaqi }} <i class=""></i></span>
             <span class="pjadt_pm10">{{ gzepb_lastest_data.pm10_iaqi }} <i class=""></i></span>
+            <span class="pjadt_so2">{{ gzepb_lastest_data.so2_iaqi }} <i class=""></i></span>
+            <span class="pjadt_no2">{{ gzepb_lastest_data.no2_iaqi }} <i class=""></i></span>
+            <span class="pjadt_co">{{ gzepb_lastest_data.co_iaqi }} <i class=""></i></span>
+            <span class="pjadt_o3">{{ gzepb_lastest_data.o3_iaqi }} <i class=""></i></span>
             <div class="clear"></div>
           {% else %}
             <a class="pjadt_location" href="#" title="详细数据">无数据</a>
