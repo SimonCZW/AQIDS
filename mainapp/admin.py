@@ -4,6 +4,7 @@ from django.contrib import admin
 from mainapp.models import AqiStandard
 from mainapp.models import Station
 from mainapp.models import GzepbAqiData, AqicnIAqiData
+from mainapp.models import GzepbAqiDataUsaStandard
 
 admin.site.site_header = 'AQIDS后台管理系统'
 admin.site.site_title = 'AQIDS后台管理'
@@ -117,3 +118,28 @@ class GzepbAqiDataAdmin(admin.ModelAdmin):
                      'station_name__display_name']
 admin.site.register(GzepbAqiData, GzepbAqiDataAdmin)
 # myadmin_site.register(AqiStandard, GzepbAqiDataAdmin)
+
+class GzepbAqiDataUsaStandardAdmin(admin.ModelAdmin):
+    fieldsets = (
+        ('basic', {
+            'fields': ('time_point', 'station_name', 'quality',
+                       'aqi', 'dominentpol', 'origin_data')
+        }),
+        ('iaqi', {
+            'classes': ('collapse',),
+            'fields': ('pm25_iaqi', 'pm10_iaqi', 'no2_iaqi',
+                       'so2_iaqi', 'co_iaqi', 'o3_iaqi_8h')
+        }),
+    )
+    list_display = ('time_point', 'station_name', 'quality', 'aqi',
+                    'dominentpol')
+    list_display_links = ('aqi',)
+    list_filter = ('quality', 'dominentpol', 'station_name')
+    readonly_fields = ('time_point', 'station_name', 'quality', 'aqi',
+                       'dominentpol', 'origin_data',
+                       'pm25_iaqi', 'pm10_iaqi', 'no2_iaqi',
+                       'so2_iaqi', 'co_iaqi', 'o3_iaqi_8h')
+    search_fields = ['station_name__station_name',
+                     'station_name__station_type',
+                     'station_name__display_name']
+admin.site.register(GzepbAqiDataUsaStandard, GzepbAqiDataUsaStandardAdmin)
