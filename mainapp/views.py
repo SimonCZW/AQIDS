@@ -429,9 +429,12 @@ class StationView(TemplateView):
         color_list = ['#79b05f', '#e58c65', 'blue']
         option['color']+=color_list[:len(queryset_dict)]
 
+        line_name_mapping = {'AqicnIAqiData': '美国领事馆数据',
+                             'GzepbAqiData': '广州空气质量发布中心数据'}
         for line_name, datas in queryset_dict.iteritems():
-            option['legend']['data'].append(line_name)
-            series_data = {'name': line_name, 'type': 'line', 'data': []}
+            option['legend']['data'].append(line_name_mapping[line_name])
+            series_data = {'name': line_name_mapping[line_name],
+                           'type': 'line', 'data': []}
 
             last_aqi=0
             for data in datas:
