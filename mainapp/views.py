@@ -3,6 +3,7 @@ import datetime
 
 from django.views.generic import TemplateView
 from mainapp.models import GzepbAqiData, AqicnIAqiData
+from mainapp.models import GzepbAqiDataUsaStandard
 
 
 class IndexView(TemplateView):
@@ -426,11 +427,12 @@ class StationView(TemplateView):
             raise ValueError("models must be a list or a tuple.")
 
         # for different color line
-        color_list = ['#79b05f', '#e58c65', 'blue']
+        color_list = ['#79b05f', '#e58c65', 'red']
         option['color']+=color_list[:len(queryset_dict)]
 
         line_name_mapping = {'AqicnIAqiData': '美国领事馆数据',
-                             'GzepbAqiData': '广州空气质量发布中心数据'}
+                             'GzepbAqiData': '广州空气质量发布中心数据',
+                             'GzepbAqiDataUsaStandard': '广州空气质量发布中心数据(美标)'}
         for line_name, datas in queryset_dict.iteritems():
             option['legend']['data'].append(line_name_mapping[line_name])
             series_data = {'name': line_name_mapping[line_name],
@@ -509,6 +511,10 @@ class StationView(TemplateView):
             model=GzepbAqiData,
             time_point=hour_now,
             display_station=self.kwargs['display_name'])
+        context['gzepb_lastest_data_usa_standard'] = self.get_model_lastest_station_data(
+            model=GzepbAqiDataUsaStandard,
+            time_point=hour_now,
+            display_station=self.kwargs['display_name'])
 
         # context['aqicn_option'] = self.get_line_option(
             # model=AqicnIAqiData,
@@ -519,7 +525,7 @@ class StationView(TemplateView):
             # time_point=hour_now,
             # display_station=self.kwargs['display_name'])
         context['station_option_24h'] = self.get_line_option(
-            models=[AqicnIAqiData, GzepbAqiData],
+            models=[AqicnIAqiData, GzepbAqiData, GzepbAqiDataUsaStandard],
             time_point=hour_now,
             display_station=self.kwargs['display_name'])
 

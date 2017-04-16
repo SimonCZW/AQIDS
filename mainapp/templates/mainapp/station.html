@@ -492,6 +492,22 @@
           <div class="clear"></div>
         </li>                             
       </ul>
+      <ul class="pj_area_data_details station">
+        <li class="pj_area_data_item pj_area_data_item_darkbg">
+          <b></b>
+          <a class="pjadt_location" href="http://www.gzepb.gov.cn/aqi/" title="数据源" target="_blank">空气质量发布中心(美标)</a>
+          <span class="pjadt_aqi">{{ gzepb_lastest_data_usa_standard.aqi }}<i class=""></i></span>
+          <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ gzepb_lastest_data_usa_standard.quality.usa_quality }}</em></span>
+          <span class="pjadt_wuranwu">{{ gzepb_lastest_data_usa_standard.dominentpol }}</span>
+          <span class="pjadt_pm25">{{ gzepb_lastest_data_usa_standard.pm25_iaqi }} <i class=""></i></span>
+          <span class="pjadt_pm10">{{ gzepb_lastest_data_usa_standard.pm10_iaqi }} <i class=""></i></span>
+          <span class="pjadt_so2">{{ gzepb_lastest_data_usa_standard.so2_iaqi }} <i class=""></i></span>
+          <span class="pjadt_no2">{{ gzepb_lastest_data_usa_standard.no2_iaqi }} <i class=""></i></span>
+          <span class="pjadt_co">{{ gzepb_lastest_data_usa_standard.co_iaqi }} <i class=""></i></span>
+          <span class="pjadt_o3">{{ gzepb_lastest_data_usa_standard.o3_iaqi_8h }} <i class=""></i></span>
+          <div class="clear"></div>
+        </li>                             
+      </ul>
     </div>
   <!-- banner 仅aqicn站点/仅gzepb/无数据情况/站点不存在也会显示这里 -->
   {% else %}
@@ -539,6 +555,18 @@
             <span class="pjadt_no2">{{ gzepb_lastest_data.no2_iaqi }} <i class=""></i></span>
             <span class="pjadt_co">{{ gzepb_lastest_data.co_iaqi }} <i class=""></i></span>
             <span class="pjadt_o3">{{ gzepb_lastest_data.o3_iaqi }} <i class=""></i></span>
+            <div class="clear"></div>
+            
+            <a class="pjadt_location" href="http://www.gzepb.gov.cn/aqi/" title="数据源" target="_blank">空气质量发布中心(美标)</a>
+            <span class="pjadt_aqi">{{ gzepb_lastest_data_usa_standard.aqi }}<i class=""></i></span>
+            <span class="pjadt_quality"><em class="pjadt_quality_bglevel_1">{{ gzepb_lastest_data_usa_standard.quality.usa_quality }}</em></span>
+            <span class="pjadt_wuranwu">{{ gzepb_lastest_data_usa_standard.dominentpol }}</span>
+            <span class="pjadt_pm25">{{ gzepb_lastest_data_usa_standard.pm25_iaqi }} <i class=""></i></span>
+            <span class="pjadt_pm10">{{ gzepb_lastest_data_usa_standard.pm10_iaqi }} <i class=""></i></span>
+            <span class="pjadt_so2">{{ gzepb_lastest_data_usa_standard.so2_iaqi }} <i class=""></i></span>
+            <span class="pjadt_no2">{{ gzepb_lastest_data_usa_standard.no2_iaqi }} <i class=""></i></span>
+            <span class="pjadt_co">{{ gzepb_lastest_data_usa_standard.co_iaqi }} <i class=""></i></span>
+            <span class="pjadt_o3">{{ gzepb_lastest_data_usa_standard.o3_iaqi_8h }} <i class=""></i></span>
             <div class="clear"></div>
           {% else %}
             <a class="pjadt_location" href="#" title="详细数据">无数据</a>
