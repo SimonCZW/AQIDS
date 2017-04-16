@@ -116,6 +116,35 @@ class GzepbAqiData(models.Model):
         unique_together = (('station_name', 'time_point'),)
         app_label = 'mainapp'
 
+class GzepbAqiDataUsaStandard(models.Model):
+    origin_data = models.OneToOneField(GzepbAqiData, on_delete=models.CASCADE,
+                                       verbose_name='原始数据',
+                                       primary_key=True)
+    station_name = models.ForeignKey('Station', on_delete=models.CASCADE,
+                                     verbose_name='监测点',
+                                     blank=True, null=True)
+    time_point = models.DateTimeField('发布时间')
+    date = models.DateField('日期', default=datetime.date.today)
+    aqi = models.FloatField('AQI值', blank=True, null=True)
+    dominentpol = models.CharField('主要污染物', max_length=50,
+                                   blank=True, null=True)
+    quality = models.ForeignKey('AqiStandard', on_delete=models.DO_NOTHING,
+                                verbose_name='空气质量等级')
+    so2_iaqi = models.FloatField('so2 iaqi值(1h)', blank=True, null=True)
+    no2_iaqi = models.FloatField('no2 iaqi值(1h)', blank=True, null=True)
+    pm10_iaqi = models.FloatField('pm10 iaqi值(1h)', blank=True, null=True)
+    co_iaqi = models.FloatField('co iaqi值(1h)', blank=True, null=True)
+    o3_iaqi_8h = models.FloatField('o3 iaqi值(8h)', blank=True, null=True)
+    pm25_iaqi = models.FloatField('pm25 iaqi值(1h)', blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s - %s" % (str(self.time_point), self.station_name)
+
+    class Meta:
+        db_table = 'gzepbaqidata_usastandard'
+        unique_together = (('station_name', 'time_point'),)
+        app_label = 'mainapp'
+
 class AqicnIAqiData(models.Model):
     id = models.AutoField(primary_key=True)
     station_name = models.ForeignKey('Station', models.CASCADE,
