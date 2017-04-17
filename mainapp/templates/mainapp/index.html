@@ -42,7 +42,7 @@
     <div class="topnav_width">
         <div class="topnav">
             <div class="topnav_right">
-                <a class="topnav_map" href="/map.html">进入地图模式&gt;&gt;</a>
+                <a class="topnav_map" href="#">进入地图模式&gt;&gt;</a>
             </div>
         </div>
     </div>
@@ -119,20 +119,20 @@
                   <div class="cbol_aqi">
                     {% if gzepb_city_average %}
                       {% if gzepb_city_average.aqi %}
-                        <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ gzepb_city_average.aqi|add:0 }}</a>
+                        <a class="cbol_aqi_num" href="#">{{ gzepb_city_average.aqi|add:0 }}</a>
                       {% else %}
                        <i></i>  
                       {% endif %}
                     {% elif aqicn_city_average %}
                       {% if aqicn_city_average.aqi %}
-                        <a class="cbol_aqi_num" href="/news/385.html" target="_blank">{{ aqicn_city_average.aqi|add:0 }}</a>
+                        <a class="cbol_aqi_num" href="#">{{ aqicn_city_average.aqi|add:0 }}</a>
                       {% else %}
                        <i></i>  
                       {% endif %}
                     {% else %}
                       <p class="cbol_aqi_num cbol_aqi_nodata"><i></i></p>
                     {% endif %}
-                    <a class="cbol_aqi_name" href="/news/385.html" target="_blank">AQI指数</a>
+                    <a class="cbol_aqi_name" href="http://baike.baidu.com/link?url=fQGyWSkZbsArgXKKdtDvxhoAqLYuX7FofaSgQzGwCEBWDoU3nC5WAKD4WipS7sEuM1711D-1SmJjWaL7xm42mFDsKo71toZxcPMqgDWREGDLHVsct49KMJo6tAyaK9__nqStE2j0-3hNDMhXGdImka" target="_blank">AQI指数</a>
                   </div>
                   
                   <!-- 首要污染物 -->
@@ -140,54 +140,54 @@
                     <!--没有污染物数据的时候，增加个“cbol_wuranwu_nodata”，删掉里面内容再加个i标签"<i></i>"-->
                     {% if gzepb_city_average %}
                       {% if gzepb_city_average.dominentpol %}
-                        <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ gzepb_city_average.dominentpol }}</a>
+                        <a class="cbol_wuranwu_num " href="#">{{ gzepb_city_average.dominentpol }}</a>
                       {% else %}
-                        <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+                        <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="#"><i></i></a>
                       {% endif %}
                     {% elif aqicn_city_average %}
                       {% if aqicn_city_average.dominentpol %}
-                        <a class="cbol_wuranwu_num " href="/news/387.html" target="_blank">{{ aqicn_city_average.dominentpol|upper }}</a>
+                        <a class="cbol_wuranwu_num " href="#">{{ aqicn_city_average.dominentpol|upper }}</a>
                       {% else %}
-                        <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+                        <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="#"><i></i></a>
                       {% endif %}
                     {% else %}
-                      <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="/news/387.html" target="_blank"><i></i></a>
+                      <a class="cbol_wuranwu_num cbol_wuranwu_nodata" href="#"</i></a>
                     {% endif %}
-                    <a class="cbol_wuranwu_name" href="/news/387.html" target="_blank">首要污染物</a>
+                    <a class="cbol_wuranwu_name" href="http://baike.baidu.com/link?url=bsnHcrKxVqxXcc2e96wkh8KvcdAhD9JZDcev70IP24QTzFXv7QKeO0Nue_KMnLqw5FpdWcuZ3Yx96XPR6VQ8W5BnyAxBj7Gaq4VywnYqqLFQqWtcDydHmBLR2b4FlLgZSIa7Z3zYXKL8aXYGgSTtWK" target="_blank">首要污染物</a>
                   </div>
 
                   <!-- PM2.5浓度/IAQI值 -->
                   <div class="cbol_nongdu">
                     {% if gzepb_city_average %}
                       {% if gzepb_city_average.pm25_1h %}
-                        <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                        <a class="cbol_nongdu_num " href="#">
                           <span class="cbol_nongdu_num_1">{{ gzepb_city_average.pm25_1h|add:0 }}</span>
                           <span class="cbol_nongdu_num_2">微克/立方米</span>
                         </a>
-                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                        <a class="cbol_nongdu_name" href="#">PM2.5浓度</a>
                       {% else %}
-                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="#">
                           <i></i>
                         </a>
-                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                        <a class="cbol_nongdu_name" href="#">PM2.5浓度</a>
                       {% endif %}
                     {% elif aqicn_city_average %}
                       {% if aqicn_city_average.pm25_iaqi %}
-                        <a class="cbol_nongdu_num " href="/news/386.html" target="_blank">
+                        <a class="cbol_nongdu_num " href="#">
                           <span class="cbol_nongdu_num_iaqi">{{ aqicn_city_average.pm25_iaqi|add:0 }}</span>
                         </a>
-                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5 IAQI</a>
+                        <a class="cbol_nongdu_name" href="#">PM2.5 IAQI</a>
                       {% else %}
-                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="#">
                           <i></i>
                         </a>
-                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5 IAQI</a>
+                        <a class="cbol_nongdu_name" href="#">PM2.5 IAQI</a>
                       {% endif %} 
                     {% else %}
-                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="/news/386.html" target="_blank">
+                        <a class="cbol_nongdu_num cbol_nongdu_nodata" href="#">
                           <i></i>
                         </a>
-                        <a class="cbol_nongdu_name" href="/news/386.html" target="_blank">PM2.5浓度</a>
+                        <a class="cbol_nongdu_name" href="#">PM2.5浓度</a>
                     {% endif %}
                   </div>
                 </div>
@@ -272,7 +272,7 @@
                         <div class="clear"></div>
                     </div>
                     <p class="pj_area_links">
-                        <a href="/news/96.html" target="_blank">查看中美标准差异&gt;&gt;</a>
+                        <a href="https://zh.wikipedia.org/wiki/%E7%A9%BA%E6%B0%94%E8%B4%A8%E9%87%8F%E6%8C%87%E6%95%B0" target="_blank">查看中美标准差异&gt;&gt;</a>
                     </p>
 
                     <!--详细数据开始-->
