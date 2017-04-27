@@ -9,18 +9,19 @@ from mainapp.models import GzepbAqiDataUsaStandard
 class IndexView(TemplateView):
     template_name = "mainapp/index.html"
 
-    def get_last_24h_data(self, model, display_station, time_point):
+    def get_time_list_24h(self, time_point):
         time_list_24h = []
-        time_list_24h.append(time_point)
         time_point = datetime.datetime.strptime(time_point, "%Y-%m-%d %H:%M:%S")
-        for hour in range(1, 24):
+        for hour in range(0, 24):
             time_list_24h.append((
                 time_point-datetime.timedelta(hours=hour)).strftime(
                     "%Y-%m-%d %H:%M:%S"))
         time_list_24h = time_list_24h[::-1]
+        return time_list_24h
 
+    def get_last_24h_data2(self, model, display_station, time_list):
         data_24h = []
-        for time_point in time_list_24h:
+        for time_point in time_list:
             if model.objects.filter(
                     time_point=time_point,
                     station_name__display_name=display_station).exists():
@@ -30,9 +31,11 @@ class IndexView(TemplateView):
             else:
                 data_24h.append(None)
 
-        return (time_list_24h, data_24h)
+        return data_24h
+
 
     def get_line_option(self, model, display_station, time_point):
+        """ 只能处理一条曲线,一个model的一个station"""
 
         option = {
             'color': ['#79b05f'],
@@ -66,15 +69,16 @@ class IndexView(TemplateView):
             }],
         }
 
-        (time_list, queryset_list) = self.get_last_24h_data(
-            model=model,
-            display_station=display_station,
-            time_point=time_point)
-
+        time_list = self.get_time_list_24h(time_point)
         for time in time_list:
             option['xAxis'][0]['data'].append(
                 datetime.datetime.strptime(time,
                     '%Y-%m-%d %H:00:00').strftime('%d号%H时').decode('utf-8'))
+
+        queryset_list = self.get_last_24h_data2(
+            model=model,
+            display_station=display_station,
+            time_list=time_list)
 
         last_aqi=0
         for data in queryset_list:
@@ -86,6 +90,82 @@ class IndexView(TemplateView):
                 option['series'][0]['data'].append(data.aqi)
                 last_aqi=data.aqi
 
+        return option
+
+    def get_line_option2(self, models, display_stations, time_point):
+
+        option = {
+            'color': [],
+            'tooltip': {'trigger': 'axis'},
+            'legend': {'data': []},
+            'xAxis': [{
+                'type': 'category',
+                'boundaryGap': 'false',
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                },
+                'data': []
+            }],
+            'yAxis': [{
+                'type': 'value',
+                'axisLabel': {
+                    'formatter': '{value}'
+                },
+                'axisLine': {
+                    'lineStyle': {
+                        'color': '#d4d4d4'
+                    }
+                }
+            }],
+            'series': [],
+        }
+        time_list = self.get_time_list_24h(time_point)
+        for time in time_list:
+            option['xAxis'][0]['data'].append(
+                datetime.datetime.strptime(time,
+                    '%Y-%m-%d %H:00:00').strftime('%d号%H时').decode('utf-8'))
+
+        queryset_dict={}
+        if isinstance(models, (list, tuple)):
+            for model in models:
+                #pass the model station not exists in it.
+                for display_station in display_stations:
+                    if not model.objects.filter(
+                            station_name__display_name=display_station).exists():
+                        continue
+
+                    queryset_dict[model.__name__] = self.get_last_24h_data2(
+                        model=model,
+                        time_list=time_list,
+                        display_station=display_station)
+        else:
+            raise ValueError("models must be a list or a tuple.")
+
+        # for different color line
+        color_list = ['#79b05f', '#e58c65', 'red']
+        option['color']+=color_list[:len(queryset_dict)]
+
+        line_name_mapping = {'AqicnIAqiData': '美国领事馆数据',
+                             'GzepbAqiData': '广州空气质量发布中心数据',
+                             'GzepbAqiDataUsaStandard': '广州空气质量发布中心数据(美标)'}
+        for line_name, datas in queryset_dict.iteritems():
+            option['legend']['data'].append(line_name_mapping[line_name])
+            series_data = {'name': line_name_mapping[line_name],
+                           'type': 'line', 'data': []}
+
+            last_aqi=0
+            for data in datas:
+                if data is None:
+                    # series_data['data'].append(None)
+                    # UserWarning hour ago data if no data.
+                    series_data['data'].append(last_aqi)
+                else:
+                    series_data['data'].append(data.aqi)
+                    last_aqi=data.aqi
+
+            option['series'].append(series_data)
         return option
 
 
@@ -203,10 +283,18 @@ class IndexView(TemplateView):
         # context['aqicn_city_average'] = self.get_model_lastest_total(
             # model=AqicnIAqiData, time_point=hour_now)
 
-        context['aqicn_option'] = self.get_line_option(
-            model=AqicnIAqiData,
-            display_station="广州均值",
-            time_point=hour_now)
+        # context['aqicn_option'] = self.get_line_option(
+            # model=AqicnIAqiData,
+            # display_station="广州均值",
+            # model=GzepbAqiData,
+            # display_station="全市平均",
+            # time_point=hour_now)
+
+        context['option'] = self.get_line_option2(
+            models=[AqicnIAqiData, GzepbAqiData, GzepbAqiDataUsaStandard],
+            time_point=hour_now,
+            display_stations=["全市平均", "广州均值"])
+
         return context
 
 class TestIndexView(TemplateView):
