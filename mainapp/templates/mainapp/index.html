@@ -492,7 +492,8 @@ window.onload = function() {
 <script type="text/javascript">
 var myChart = echarts.init(document.getElementById('aqicn'));
 {% load js %}
-var option = {{ aqicn_option|js }}
+//var option = {{ aqicn_option|js }}
+var option = {{ option|js }}
 myChart.setOption(option);
 //var option = {
 //    color: ['#79b05f', '#e58c65'],
